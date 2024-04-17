@@ -3,5 +3,13 @@ Repository for CITS3403 Project
 
 To start flask app:
 Open CITS3403Project folder in CMD.
-Enter: source venv/bin/activate
-Enter: flask run
+Enter: python3 -m venv venv
+Enter: source venv/bin/activate (on linux)
+pip install these packages:
+flask
+flask-wtf
+flask-sqlalchemy
+flask-migrate
+flask-login
+email-validator
+
