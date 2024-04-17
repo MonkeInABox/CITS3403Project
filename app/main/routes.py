@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, current_app
 from app.main.forms import EditProfileForm, PostNewPost
 from flask_login import current_user, login_required
 import sqlalchemy as sa
@@ -20,15 +20,15 @@ def index():
     '''Main landing page'''
     page = request.args.get('page', 1, type=int)
     query = sa.select(Post).order_by(Post.timestamp.desc())
-    posts = db.paginate(query, page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
 
     if posts.has_next:
-        next_url = url_for('index', page=posts.next_num)
+        next_url = url_for('main.index', page=posts.next_num)
     else:
         next_url = None
 
     if posts.has_prev:
-        prev_url = url_for('index', page=posts.prev_num)
+        prev_url = url_for('main.index', page=posts.prev_num)
     else:
         prev_url = None
 
