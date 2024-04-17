@@ -1,29 +1,32 @@
 <!doctype html>
 <html>
-  <html>
-    <head>
-        {% if title %}
-        <title>{{ title }} - microblog</title>
+  <head>
+      {% if title %}
+      <title>{{ title }} - CITS3403</title>
+      {% else %}
+      <title>CITS3403</title>
+      {% endif %}
+  </head>
+  <body>
+      <div>
+        CITS3403:
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('login') }}">Login</a>
         {% else %}
-        <title>microblog</title>
+        <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}
-    </head>
-    <body>
-        <div>
-            Microblog:
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('login') }}">Login</a>
-        </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </body>
+      </div>
+      <hr>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+  </body>
 </html>
