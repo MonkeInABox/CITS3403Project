@@ -17,9 +17,9 @@ class User(UserMixin, db.Model):
     
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
-    posts: so.WriteOnlyMapped['Post'] = so.relationship(back_populates='author')
+    posts: so.Mapped['Post'] = so.relationship(back_populates='author')
     
-    user_comments: so.WriteOnlyMapped['Comment'] = so.relationship(back_populates="commenter")
+    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter")
 
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     
