@@ -17,9 +17,10 @@ class User(UserMixin, db.Model):
     
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
-    posts: so.WriteOnlyMapped['Post'] = so.relationship(
-        back_populates='author')
+    posts: so.WriteOnlyMapped['Post'] = so.relationship(back_populates='author')
     
+    user_comments: so.WriteOnlyMapped['Comment'] = so.relationship(back_populates="commenter")
+
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     
     last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
@@ -36,6 +37,7 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+    
 
 class Post(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -50,8 +52,25 @@ class Post(db.Model):
 
     author: so.Mapped[User] = so.relationship(back_populates='posts')
 
+    comments: so.WriteOnlyMapped['Comment'] = so.relationship(back_populates='original_post')
+
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+    
+    
+class Comment(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    body: so.Mapped[str] = so.mapped_column(sa.String(200))
+
+    author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+
+    commenter: so.Mapped[User] = so.relationship(back_populates="user_comments")
+
+    post_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Post.id), index=True)
+
+    original_post: so.Mapped[Post] = so.relationship(back_populates='comments')
+    
 
 @login.user_loader
 def load_user(id):
