@@ -13,3 +13,6 @@ flask-migrate
 flask-login  
 email-validator  
 
+Then enter: flask run
+
+Info about the IP Address and port should appear in the CMD window.
