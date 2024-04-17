@@ -1,21 +1,21 @@
-from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostNewPost
-from flask_login import current_user, login_user, logout_user, login_required
+from app.main.forms import EditProfileForm, PostNewPost
+from flask_login import current_user, login_required
 import sqlalchemy as sa
 from app.models import User, Post
-from urllib.parse import urlsplit
 from datetime import datetime, timezone
+from app.main import bp
+from app import db
 
 # What to do before calling anything else
-@app.before_request
+@bp.before_app_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.now(timezone.utc)
         db.session.commit()
 
 # Landing Page
-@app.route('/', methods=['GET'])
+@bp.route('/', methods=['GET'])
 def index():
     '''Main landing page'''
     query = sa.select(Post)
@@ -23,7 +23,7 @@ def index():
 
     return render_template('index.html', title='Home', posts=posts)
 
-@app.route('/newpost', methods=['GET', 'POST'])
+@bp.route('/newpost', methods=['GET', 'POST'])
 def newpost():
     if not current_user.is_authenticated:
         return redirect(url_for('register'))
@@ -33,13 +33,13 @@ def newpost():
         db.session.add(post)
         db.session.commit()
         flash("Congrats! New post")
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     elif request.method == 'GET':
         return render_template('new_post.html', form=form)
 
 # Categories (can split if need be later on)
-@app.route('/categories/', defaults={'category': None}, methods=['GET'])
-@app.route('/categories/<category>/', methods=['GET'])
+@bp.route('/categories/', defaults={'category': None}, methods=['GET'])
+@bp.route('/categories/<category>/', methods=['GET'])
 def categories(category):
     '''Categories page'''
     if category == None:
@@ -49,8 +49,8 @@ def categories(category):
 
 # NEED TO REWORK BELOW FUNCTIONALITY - IT IS VERY VERY BAD AND BROKEN!!!!
 # Main profile page - maybe use cookies?? Need a sign in page probs /profile/signin?
-@app.route('/profile/', defaults={'username': None}, methods=['GET'])
-@app.route('/profile/<username>', methods=['GET'])
+@bp.route('/profile/', defaults={'username': None}, methods=['GET'])
+@bp.route('/profile/<username>', methods=['GET'])
 def profile(username):
     '''Profile page'''
     # If current user is attempting to access their own profile (without specifing in URL)
@@ -70,50 +70,7 @@ def profile(username):
     elif username == None and not current_user.is_authenticated:
         return redirect(url_for('register'))
 
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('profile', username=current_user.username))
-    form = LoginForm()
-    if form.validate_on_submit():
-        # Get user from database
-        user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
-        # If user exists in database (so the user object isn't empty) check password
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or urlsplit(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(url_for('index'))
-    return render_template('login.html', title='Sign In', form=form)
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('profile', username=current_user.username))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        login_user(user, remember=True)
-        next_page = request.args.get('next')
-        if not next_page or urlsplit(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(url_for('profile', username=current_user.username))
-    return render_template('registration.html', title='Register', form=form)
-
-@app.route('/edit_profile', methods=['GET', 'POST'])
+@bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
