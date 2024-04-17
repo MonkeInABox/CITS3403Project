@@ -68,7 +68,7 @@ class Comment(db.Model):
 
     commenter: so.Mapped[User] = so.relationship(back_populates="user_comments")
 
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
 
     original_post = db.relationship('Post', back_populates='comments')
     
