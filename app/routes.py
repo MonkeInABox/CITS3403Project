@@ -1,22 +1,23 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app.models import User
 from urllib.parse import urlsplit
+from datetime import datetime, timezone
+
+# What to do before calling anything else
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now(timezone.utc)
+        db.session.commit()
 
 # Landing Page
 @app.route('/', methods=['GET', 'POST'])
 def index():
     '''Main landing page'''
-    # if flask.request.method == POST
-    #    handleUserPost(flask.request.values.get('postText'))
-    #
-    #  This would just handle when users want to submit things to the board?
-
-    user = {'username': 'Miguel'}
-    
     return render_template('index.html', title='Home')
 
 # Categories (can split if need be later on)
@@ -30,18 +31,31 @@ def categories(category):
         return f"welcome to the category {category}"
     
 # Main profile page - maybe use cookies?? Need a sign in page probs /profile/signin?
-@app.route('/profile', methods=['GET'])
-@login_required
-def profile():
+@app.route('/profile/', defaults={'username': None}, methods=['GET'])
+@app.route('/profile/<username>', methods=['GET'])
+def profile(username):
     '''Profile page'''
-    # if signedInProfile == None:
-    #    return redirect("https://www.127.0.0.1:5000/profile/signin")??? Maybe idk
-    return render_template('profile.html')
+    # If current user is attempting to access their own profile (without specifing in URL)
+    if username == None and current_user.is_authenticated:
+        print("test")
+        user = db.first_or_404(sa.select(User).where(User.username == current_user))
+        return render_template('profile.html', user=user)
+    # If current user is attempting to access their own profile (with specifing in URL)
+    elif current_user.is_authenticated:
+        user = db.first_or_404(sa.select(User).where(User.username == username))
+        return render_template('profile.html', user=user)
+    # If someone is trying to see someone elses profile.
+    elif username != current_user and username != None:
+        user = db.first_or_404(sa.select(User).where(User.username == username))
+        return render_template('profile.html', user=user)
+    elif username == None and not current_user.is_authenticated:
+        return redirect(url_for('register'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', username=current_user.username))
     form = LoginForm()
     if form.validate_on_submit():
         # Get user from database
@@ -65,7 +79,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', username=current_user.username))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
@@ -77,13 +91,22 @@ def register():
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', username=current_user.username))
     return render_template('registration.html', title='Register', form=form)
 
-#@app.route('search/<searchedFor>', methods=['GET'])
-#def search():
-    '''Search Bar Functionality'''
-    # Handle what ever it is that the search bar needs to handle - string matching etc.
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.about_me = form.about_me.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('profile', username=current_user.username))
+    elif request.method == 'GET':
+        form.about_me.data = current_user.about_me
+    return render_template('edit_profile.html', title='Edit Profile',
+                           form=form)
 
 
     
