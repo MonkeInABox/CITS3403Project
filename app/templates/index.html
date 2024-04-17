@@ -8,7 +8,7 @@
     {% endif %}
     {% for post in posts %}
     <p class = "post">
-    {{ post.author.username }} says: <b class="post_body"> {{ post.body }}</b>
+    {% include '_post.html' %}
     </p>
     {% endfor %}
 {% endblock %}
