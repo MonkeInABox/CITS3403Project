@@ -18,10 +18,21 @@ def before_request():
 @bp.route('/', methods=['GET'])
 def index():
     '''Main landing page'''
-    query = sa.select(Post)
-    posts = db.session.scalars(query).all()
+    page = request.args.get('page', 1, type=int)
+    query = sa.select(Post).order_by(Post.timestamp.desc())
+    posts = db.paginate(query, page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
 
-    return render_template('index.html', title='Home', posts=posts)
+    if posts.has_next:
+        next_url = url_for('index', page=posts.next_num)
+    else:
+        next_url = None
+
+    if posts.has_prev:
+        prev_url = url_for('index', page=posts.prev_num)
+    else:
+        prev_url = None
+
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/newpost', methods=['GET', 'POST'])
 def newpost():
