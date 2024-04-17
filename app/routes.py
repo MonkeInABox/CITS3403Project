@@ -18,7 +18,10 @@ def before_request():
 @app.route('/', methods=['GET'])
 def index():
     '''Main landing page'''
-    return render_template('index.html', title='Home')
+    query = sa.select(Post)
+    posts = db.session.scalars(query).all()
+
+    return render_template('index.html', title='Home', posts=posts)
 
 @app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
@@ -27,10 +30,12 @@ def newpost():
     form = PostNewPost()
     if form.validate_on_submit():
         post = Post(body=form.body.data, author=current_user, category="Music")
-        post.session.add(post)
-        post.session.commit()
+        db.session.add(post)
+        db.session.commit()
         flash("Congrats! New post")
-        next_page = request.args.get('next')
+        return redirect(url_for('index'))
+    elif request.method == 'GET':
+        return render_template('new_post.html', form=form)
 
 # Categories (can split if need be later on)
 @app.route('/categories/', defaults={'category': None}, methods=['GET'])
