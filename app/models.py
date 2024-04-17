@@ -52,10 +52,11 @@ class Post(db.Model):
 
     author: so.Mapped[User] = so.relationship(back_populates='posts')
 
-    comments: so.WriteOnlyMapped['Comment'] = so.relationship(back_populates='original_post')
+    comments = db.relationship('Comment', back_populates='original_post')
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+    
     
     
 class Comment(db.Model):
@@ -67,9 +68,9 @@ class Comment(db.Model):
 
     commenter: so.Mapped[User] = so.relationship(back_populates="user_comments")
 
-    post_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Post.id), index=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
-    original_post: so.Mapped[Post] = so.relationship(back_populates='comments')
+    original_post = db.relationship('Post', back_populates='comments')
     
 
 @login.user_loader
