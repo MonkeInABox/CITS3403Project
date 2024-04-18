@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, current_app
-from app.main.forms import EditProfileForm, PostNewPost
+from app.main.forms import EditProfileForm, PostNewPost, PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
 from app.models import User, Post, Comment
@@ -35,9 +35,8 @@ def index():
     return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/newpost', methods=['GET', 'POST'])
+@login_required
 def newpost():
-    if not current_user.is_authenticated:
-        return redirect(url_for('register'))
     form = PostNewPost()
     if form.validate_on_submit():
         post = Post(body=form.body.data, author=current_user, category="Music")
@@ -47,6 +46,16 @@ def newpost():
         return redirect(url_for('main.index'))
     elif request.method == 'GET':
         return render_template('new_post.html', form=form)
+
+
+@bp.route('/newcomment', methods=['GET', 'POST'])
+def newcomment():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main.register'))
+    form = PostNewComment()
+    if form.validate_on_submit():
+        post = request.args.get('post')
+
 
 # Categories (can split if need be later on)
 @bp.route('/categories/', defaults={'category': None}, methods=['GET'])

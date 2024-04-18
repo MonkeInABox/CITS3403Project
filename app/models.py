@@ -75,4 +75,4 @@ class Comment(db.Model):
 
 @login.user_loader
 def load_user(id):
-    return db.session.get(User, int(id))
+    return User.query.get(int(id))

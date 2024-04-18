@@ -17,14 +17,14 @@
         <ul class="navbar-nav">
           {% if current_user.is_anonymous %}
           <li>
-          <a class = "nav-link" href="{{ url_for('main.login') }}">Login</a>
+          <a class = "nav-link" href="{{ url_for('auth.login') }}">Login</a>
           </li>
           {% else %}
           <li>
           <a class = "nav-link" href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a>
           </li>
           <li>
-          <a class = "nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+          <a class = "nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
           </li>
           <li>
           <a class = "nav-link" href="{{ url_for('main.newpost') }}">New Post</a>

@@ -9,3 +9,7 @@ class EditProfileForm(FlaskForm):
 class PostNewPost(FlaskForm):
     body = TextAreaField('Post Body', validators=[Length(min=0, max=200)])
     submit = SubmitField('Submit Post')
+
+class PostNewComment(FlaskForm):
+    body = TextAreaField('Post Comment', validators=[Length(min=0, max=200)])
+    submit = SubmitField('Submit Comment')
