@@ -5,14 +5,11 @@ To start flask app:
 Open CITS3403Project folder in CMD.  
 Enter: python3 -m venv venv  
 Enter: source venv/bin/activate (on linux)  
-pip install these packages:  
-flask  
-flask-wtf  
-flask-sqlalchemy  
-flask-migrate  
-flask-login  
-email-validator  
+Enter: pip install -r /requirements.txt  
 
-Then enter: flask run
+Enter: flask db init  
+Enter: flask db migrate  
+Enter: flask db upgrade  
 
-Info about the IP Address and port should appear in the CMD window.
+Enter: flask run  
+You will now see the CMD window for the web server up and running!
