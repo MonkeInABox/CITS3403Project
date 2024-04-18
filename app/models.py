@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
-    posts: so.Mapped['Post'] = so.relationship(back_populates='author')
+    posts: so.WriteOnlyMapped['Post'] = so.relationship(back_populates='author')
     
     user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter")
 
@@ -57,7 +57,9 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post {}>'.format(self.body)
     
-    
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
     
 class Comment(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -72,7 +74,3 @@ class Comment(db.Model):
 
     original_post = db.relationship('Post', back_populates='comments')
     
-
-@login.user_loader
-def load_user(id):
-    return User.query.get(int(id))

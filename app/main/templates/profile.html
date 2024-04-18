@@ -3,17 +3,36 @@
 {% block content %}
     <table>
         <tr valign="top">
-            <td><img src="{{ user.avatar(128) }}"></td>
             <td>
+                <img src="{{ user.avatar(128) }}">
                 <h1>User: {{ user.username }}</h1>
                 {% if user.about_me %}<p>About me:<p></p>{{ user.about_me }}</p>{% endif %}
                 {% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
-            </td>
             <td>
                 {% if user == current_user %}
                 <p><a href="{{ url_for('main.edit_profile') }}">Edit your profile</a></p>
                 {% endif %}
             </td>
+            <tr>
+                <td>
+                    Posts:
+                    {% for post in posts %}
+                    <p class="posts">
+                    {% include '_post.html' %}
+                    </p>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {% if prev_url %}
+                    <a href="{{ prev_url }}">Newer posts</a>
+                    {% endif %}
+                    {% if next_url %}
+                    <a href="{{ next_url }}">Older posts</a>
+                    {% endif %}
+                </td>
+            </tr>
         </tr>
     </table>
 {% endblock %}
