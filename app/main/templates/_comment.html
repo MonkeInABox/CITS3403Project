@@ -4,3 +4,18 @@
         <th><td style="size: 4px">{{ comment.body }}</td></th>
     </tr>
 </table>
+
+<script>
+    document.getElementById("commentButton").addEventListener("click", function() {
+        // Make an AJAX request to the Flask route
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/newcomment", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Handle the response if needed
+                console.log(xhr.responseText);
+            }
+        };
+        xhr.send();
+    });
+</script>

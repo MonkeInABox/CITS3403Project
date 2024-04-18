@@ -39,7 +39,8 @@ def index():
 def newpost():
     form = PostNewPost()
     if form.validate_on_submit():
-        post = Post(body=form.body.data, author=current_user, category="Music")
+        print(current_user.id)
+        post = Post(body=form.body.data, category="Music", author=current_user)
         db.session.add(post)
         db.session.commit()
         flash("Congrats! New post")
