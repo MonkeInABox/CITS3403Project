@@ -7,6 +7,7 @@ Enter: python3 -m venv venv
 Enter: source venv/bin/activate (on linux)  
 Enter: pip install -r /requirements.txt  
 
+**If app.db is missing**
 Enter: flask db init  
 Enter: flask db migrate  
 Enter: flask db upgrade  
