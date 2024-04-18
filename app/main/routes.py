@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from app.main.forms import EditProfileForm, PostNewPost, PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
+from sqlalchemy.orm import load_only
 from app.models import User, Post, Comment
 from datetime import datetime, timezone
 from app.main import bp
@@ -40,14 +41,15 @@ def newpost():
     form = PostNewPost()
     if form.validate_on_submit():
         post = Post(body=form.body.data, category="Music", author=current_user)
-        post.user_id = 2
-        print(post.user_id)
         db.session.add(post)
         db.session.commit()
+
         flash("Congrats! New post")
         return redirect(url_for('main.index'))
     elif request.method == 'GET':
         return render_template('new_post.html', form=form)
+
+
 
 
 @bp.route('/newcomment', methods=['GET', 'POST'])

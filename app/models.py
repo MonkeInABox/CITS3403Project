@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
 
-    posts: so.WriteOnlyMapped['Post'] = so.relationship(back_populates='author')
+    posts: so.Mapped[list['Post']] = so.relationship('Post', back_populates='author', lazy="dynamic", cascade="all, delete-orphan")
     
     user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter")
 
@@ -37,6 +37,7 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+        
     
 
 class Post(db.Model):
