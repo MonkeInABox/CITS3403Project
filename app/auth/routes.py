@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from app.models import User
 from urllib.parse import urlsplit
 from app.auth import bp
-from app import db
+from app import db, verify_captcha
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -41,20 +41,9 @@ def register():
     if form.validate_on_submit():
         # CAPTCHA validation
         captcha_response = request.form.get('g-recaptcha-response')
+        captcha_valid, error_message = verify_captcha(captcha_response)
         if not captcha_response:
             flash('Please complete the CAPTCHA.')
-            return redirect(url_for('auth.register'))
-
-        # Verify CAPTCHA
-        captcha_data = {
-            'secret': current_app.config['RECAPTCHA_PRIVATE_KEY'],
-            'response': captcha_response
-        }
-        captcha_verification = requests.post('https://www.google.com/recaptcha/api/siteverify', data=captcha_data)
-        verification_result = captcha_verification.json()
-
-        if not verification_result['success']:
-            flash('CAPTCHA verification failed. Please try again.')
             return redirect(url_for('auth.register'))
 
         user = User(username=form.username.data, email=form.email.data)
