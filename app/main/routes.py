@@ -2,7 +2,6 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from app.main.forms import EditProfileForm, PostNewPost, PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
-from sqlalchemy.orm import load_only
 from app.models import User, Post, Comment
 from datetime import datetime, timezone
 from app.main import bp
@@ -16,9 +15,24 @@ def before_request():
         db.session.commit()
 
 # Landing Page
-@bp.route('/', methods=['GET'])
+@bp.route('/', methods=['GET', 'POST'])
 def index():
     '''Main landing page'''
+    comment_form = PostNewComment()
+
+    if comment_form.validate_on_submit() and current_user.is_authenticated:
+        # Create a new comment and associate it with the correct post
+        post_id = request.form.get('post_id')
+        print(f"post id: {post_id}")
+
+
+        post = Post.query.get(post_id)
+        if post:
+            new_comment = Comment(body=comment_form.body.data, post_id=post_id, author_id=current_user.id)
+            db.session.add(new_comment)
+            db.session.commit()
+
+    # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
     query = sa.select(Post).order_by(Post.timestamp.desc())
     posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
@@ -33,14 +47,15 @@ def index():
     else:
         prev_url = None
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url)
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form)
+
 
 @bp.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
     form = PostNewPost()
     if form.validate_on_submit():
-        post = Post(body=form.body.data, category="Music", author=current_user)
+        post = Post(body=form.body.data, category="Music", user_id=current_user.id)
         db.session.add(post)
         db.session.commit()
 
@@ -48,18 +63,6 @@ def newpost():
         return redirect(url_for('main.index'))
     elif request.method == 'GET':
         return render_template('new_post.html', form=form)
-
-
-
-
-@bp.route('/newcomment', methods=['GET', 'POST'])
-def newcomment():
-    if not current_user.is_authenticated:
-        return redirect(url_for('main.register'))
-    form = PostNewComment()
-    if form.validate_on_submit():
-        post = request.args.get('post')
-
 
 # Categories (can split if need be later on)
 @bp.route('/categories/', defaults={'category': None}, methods=['GET'])
