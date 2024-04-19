@@ -33,5 +33,9 @@
             {% endfor %}
         </p>
         <p>{{ form.submit() }}</p>
+        {% if form.recaptcha.errors %}
+            <span style="color: red;">Please complete the reCAPTCHA below.</span>
+        {% endif %}
+        <p> {% include '_captcha.html' %}</p>
     </form>
 {% endblock %}

@@ -1,4 +1,5 @@
-from flask import render_template, flash, redirect, url_for, request
+import requests
+from flask import render_template, flash, redirect, url_for, request, current_app
 from app.auth.forms import LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user
 import sqlalchemy as sa
@@ -38,6 +39,24 @@ def register():
         return redirect(url_for('profile', username=current_user.username))
     form = RegistrationForm()
     if form.validate_on_submit():
+        # CAPTCHA validation
+        captcha_response = request.form.get('g-recaptcha-response')
+        if not captcha_response:
+            flash('Please complete the CAPTCHA.')
+            return redirect(url_for('auth.register'))
+
+        # Verify CAPTCHA
+        captcha_data = {
+            'secret': current_app.config['RECAPTCHA_PRIVATE_KEY'],
+            'response': captcha_response
+        }
+        captcha_verification = requests.post('https://www.google.com/recaptcha/api/siteverify', data=captcha_data)
+        verification_result = captcha_verification.json()
+
+        if not verification_result['success']:
+            flash('CAPTCHA verification failed. Please try again.')
+            return redirect(url_for('auth.register'))
+
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
@@ -48,4 +67,4 @@ def register():
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('main.index')
         return redirect(url_for('main.profile', username=current_user.username))
-    return render_template('registration.html', title='Register', form=form)
+    return render_template('registration.html', title='Register', form=form, current_app=current_app)

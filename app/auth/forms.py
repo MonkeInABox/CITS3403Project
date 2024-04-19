@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
+from flask_wtf.recaptcha import RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length
 import sqlalchemy as sa
 from app import db
 from app.models import User
@@ -14,9 +15,10 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password'), Length(min=8)])
     submit = SubmitField('Register')
+    recaptcha = RecaptchaField()
 
     def validate_username(self, username):
         user = db.session.scalar(sa.select(User).where(User.username == username.data))

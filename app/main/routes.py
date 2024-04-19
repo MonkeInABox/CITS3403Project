@@ -2,7 +2,6 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from app.main.forms import EditProfileForm, PostNewPost, PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
-from sqlalchemy.orm import load_only
 from app.models import User, Post, Comment
 from datetime import datetime, timezone
 from app.main import bp
