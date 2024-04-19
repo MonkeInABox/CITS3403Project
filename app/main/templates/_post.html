@@ -1,7 +1,7 @@
 <table>
     <tr valign="top">
         <th><td><img src="{{ post.author.avatar(40) }}"> <br> <p style="size: 4px">{{ post.author.username }}</p></td></th>
-        <th><td>{{ post.body }}</td></th>
+        <th><td>{{ post.body }} postid: {{ post.id }} postauthorid: {{ post.author.id }}</td></th>
         <th><td>Replies</td></th>
         <th><td><button type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">

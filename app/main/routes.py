@@ -1,7 +1,8 @@
 from flask import render_template, flash, redirect, url_for, request, current_app
-from app.main.forms import EditProfileForm, PostNewPost
+from app.main.forms import EditProfileForm, PostNewPost, PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
+from sqlalchemy.orm import load_only
 from app.models import User, Post, Comment
 from datetime import datetime, timezone
 from app.main import bp
@@ -35,18 +36,30 @@ def index():
     return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/newpost', methods=['GET', 'POST'])
+@login_required
 def newpost():
-    if not current_user.is_authenticated:
-        return redirect(url_for('register'))
     form = PostNewPost()
     if form.validate_on_submit():
-        post = Post(body=form.body.data, author=current_user, category="Music")
+        post = Post(body=form.body.data, category="Music", author=current_user)
         db.session.add(post)
         db.session.commit()
+
         flash("Congrats! New post")
         return redirect(url_for('main.index'))
     elif request.method == 'GET':
         return render_template('new_post.html', form=form)
+
+
+
+
+@bp.route('/newcomment', methods=['GET', 'POST'])
+def newcomment():
+    if not current_user.is_authenticated:
+        return redirect(url_for('main.register'))
+    form = PostNewComment()
+    if form.validate_on_submit():
+        post = request.args.get('post')
+
 
 # Categories (can split if need be later on)
 @bp.route('/categories/', defaults={'category': None}, methods=['GET'])
@@ -58,28 +71,38 @@ def categories(category):
     elif category != "":
         return f"welcome to the category {category}"
 
-# NEED TO REWORK BELOW FUNCTIONALITY - IT IS VERY VERY BAD AND BROKEN!!!!
-# Main profile page - maybe use cookies?? Need a sign in page probs /profile/signin?
+
+# Main profile page
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])
 @bp.route('/profile/<username>', methods=['GET'])
 def profile(username):
     '''Profile page'''
-    # If current user is attempting to access their own profile (without specifing in URL)
-    if username == None and current_user.is_authenticated:
-        print("test")
-        user = db.first_or_404(sa.select(User).where(User.username == current_user))
-        return render_template('profile.html', user=user)
-    # If current user is attempting to access their own profile (with specifing in URL)
-    elif current_user.is_authenticated:
+
+    # Get page number from query string or default to 1
+    page = request.args.get('page', 1, type=int)
+
+    # If username is None, assume the user is accessing their own profile
+    if username is None:
+        # If the user is authenticated, load their profile
+        if current_user.is_authenticated:
+            user = current_user
+        else:
+            # If not authenticated, redirect to register
+            return redirect(url_for('register'))
+    else:
+        # If a username is provided, load that user's profile
         user = db.first_or_404(sa.select(User).where(User.username == username))
-        return render_template('profile.html', user=user)
-    # If someone is trying to see someone elses profile.
-    elif username != current_user and username != None:
-        user = db.first_or_404(sa.select(User).where(User.username == username))
-        return render_template('profile.html', user=user)
-    # If someone is trying to access their profile but isn't authenticated
-    elif username == None and not current_user.is_authenticated:
-        return redirect(url_for('register'))
+
+    # Query posts for the user
+    query = sa.select(Post).filter(Post.author == user).order_by(Post.timestamp.desc())
+    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+
+    # Generate next and previous page URLs
+    next_url = url_for('main.profile', username=username, page=posts.next_num) if posts.has_next else None
+    prev_url = url_for('main.profile', username=username, page=posts.prev_num) if posts.has_prev else None
+
+    # Render the profile page with user information and posts
+    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url)
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user
 import sqlalchemy as sa
 from app.models import User
 from urllib.parse import urlsplit
-from app.main import bp
+from app.auth import bp
 from app import db
 
 
