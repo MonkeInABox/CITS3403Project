@@ -42,8 +42,7 @@ def register():
         # CAPTCHA validation
         captcha_response = request.form.get('g-recaptcha-response')
         captcha_valid, error_message = verify_captcha(captcha_response)
-        if not captcha_response:
-            flash('Please complete the CAPTCHA.')
+        if not captcha_valid:
             return redirect(url_for('auth.register'))
 
         user = User(username=form.username.data, email=form.email.data)
