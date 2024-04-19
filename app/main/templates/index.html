@@ -10,6 +10,11 @@
     <p class = "post">
     {% include '_post.html' %}
     </p>
+    {% if current_user.is_authenticated %}
+    <p class = "new_comment">
+        {% include 'new_comment.html' %}
+    </p>
+    {% endif %}
     {% for comment in post.comments %}
     <p>
     {% include '_comment.html' %}

@@ -53,7 +53,12 @@ class Post(db.Model):
 
     author: so.Mapped[User] = so.relationship(back_populates='posts')
 
-    comments = db.relationship('Comment', back_populates='original_post')
+    comments: so.Mapped[list['Comment']] = so.relationship('Comment', back_populates='original_post', cascade="all, delete-orphan")
+
+    def __init__(self, body: str, user_id: int, category: str):
+        self.body = body
+        self.user_id = user_id
+        self.category = category
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -69,9 +74,17 @@ class Comment(db.Model):
 
     author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
-    commenter: so.Mapped[User] = so.relationship(back_populates="user_comments")
+    commenter: so.Mapped[User] = so.relationship('User', back_populates="user_comments")
 
     post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
-
+    
     original_post = db.relationship('Post', back_populates='comments')
+
+    def __init__(self, body: str, author_id: int, post_id: int):
+        self.body = body
+        self.author_id = author_id
+        self.post_id = post_id
+
+
+
     
