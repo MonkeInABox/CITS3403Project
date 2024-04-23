@@ -1,6 +1,17 @@
 html{
     font-family: "IBM Plex Sans", sans-serif;
+    margin: 2%;
+    margin-top: 0%;
 }
 nav{
     color: rgb(76, 76, 141) !important;
+}
+h1.greeting {
+    text-align: center;
+}
+p.poster_name {
+    size: 4px;
+}
+td.reply {
+    
 }
