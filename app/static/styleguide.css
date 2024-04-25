@@ -1,10 +1,12 @@
-html{
+body {
     font-family: "IBM Plex Sans", sans-serif;
     margin: 2%;
     margin-top: 0%;
 }
-nav{
-    color: rgb(76, 76, 141) !important;
+nav {
+    background-color: rgb(76, 76, 141) !important;
+    margin-left: -2% !important;
+    margin-right: -2% !important;
 }
 h1.greeting {
     text-align: center;
@@ -23,9 +25,6 @@ td.post_body {
     border-width: 3px;
     padding: 5vh;
 }
-td.reply {
-    padding-left: 10vw;
-}
 p.comment {
     margin-left: 12vw;
     border-style: solid;
@@ -35,4 +34,9 @@ p.comment {
 p.commenter {
     margin-left: 10vw;
     font-weight: bold;
+}
+td.replies_heading {
+    font-weight: bolder;
+    color: rgb(76, 76, 141);
+    padding-left: 10vw;
 }

@@ -16,8 +16,8 @@
     </p>
     {% endif %}
     {% for comment in post.comments %}
-    <p>
-    {% include '_comment.html' %}
+    <p class="comment">
+        {% include '_comment.html' %}
     </p>
     {% endfor %}
     {% endfor %}
