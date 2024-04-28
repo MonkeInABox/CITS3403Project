@@ -1,30 +1,42 @@
-html{
+body {
     font-family: "IBM Plex Sans", sans-serif;
     margin: 2%;
     margin-top: 0%;
 }
-nav{
-    color: rgb(76, 76, 141) !important;
+nav {
+    background-color: rgb(76, 76, 141) !important;
+    margin-left: -2% !important;
+    margin-right: -2% !important;
+}
+.navbar-custom {
+    background-color: rgb(76, 76, 141) !important;
 }
 h1.greeting {
     text-align: center;
+}
+div.sign_in {
+    text-align: center;
+    background-color: rgba(76, 76, 141, 0.544);
+    margin-top:12.5vh;
+    padding: 2.5vh;
 }
 p.poster_name {
     font-weight: bold;
     size: 5vh;
     color: #152238;
-    background-color: #ffaf7a;
+    background-color: rgba(76, 76, 141, 0.544);
     margin-top: 2%;
 }
 td.post_body {
     border-style: solid;
     border-color: #152238;
-    border-radius: 1px;
+    border-radius: 20%;
     border-width: 3px;
     padding: 5vh;
+    padding-top: 2vh;
 }
-td.reply {
-    padding-left: 10vw;
+div.posts {
+    margin-right: 20vw;
 }
 p.comment {
     margin-left: 12vw;
@@ -35,4 +47,9 @@ p.comment {
 p.commenter {
     margin-left: 10vw;
     font-weight: bold;
+}
+td.replies_heading {
+    font-weight: bolder;
+    color: rgb(76, 76, 141);
+    padding-left: 10vw;
 }

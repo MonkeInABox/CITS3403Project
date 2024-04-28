@@ -3,28 +3,34 @@
 {% block content %}
     {% if current_user.is_anonymous %}
     <h1 class="greeting">Hi!</h1>
+    <h2 style="text-align: center;">Welcome to recollective! Sign in to get started!</h2>
+    <br>
     {% else %}
     <h1 class = "greeting">Hi, {{ current_user.username }}!</h1>
+    <h2 style="text-align: center;">Welcome back! Click on a topic or browse the homepage!</h2>
+    <br>
     {% endif %}
     {% for post in posts %}
+    <div class="posts">
     <p class = "post">
-    {% include '_post.html' %}
-    </p>
-    {% if current_user.is_authenticated %}
-    <p class = "new_comment">
-        {% include 'new_comment.html' %}
-    </p>
-    {% endif %}
-    {% for comment in post.comments %}
-    <p>
-    {% include '_comment.html' %}
-    </p>
-    {% endfor %}
+        {% include '_post.html' %}
+        </p>
+        {% if current_user.is_authenticated %}
+            <p class = "new_comment">
+                {% include 'new_comment.html' %}
+            </p>
+        {% endif %}
+        {% for comment in post.comments %}
+            <p class="comment">
+                {% include '_comment.html' %}
+            </p>
+        {% endfor %}
+    </div>
     {% endfor %}
     {% if prev_url %}
-    <a href="{{ prev_url }}">Newer posts</a>
+        <a href="{{ prev_url }}">Newer posts</a>
     {% endif %}
     {% if next_url %}
-    <a href="{{ next_url }}">Older posts</a>
+        <a href="{{ next_url }}">Older posts</a>
     {% endif %}
 {% endblock %}
