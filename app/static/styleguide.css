@@ -8,17 +8,36 @@ nav {
     margin-left: -2% !important;
     margin-right: -2% !important;
 }
+.error {
+    background-color: red;
+}
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
+}
+#submit {
+    background-color: rgb(76, 76, 141);
+    border-radius: 10px;
+    color: aliceblue;
+    border: none;
+    padding: 2vh;
 }
 h1.greeting {
     text-align: center;
 }
 div.sign_in {
+    margin: auto;
     text-align: center;
-    background-color: rgba(76, 76, 141, 0.544);
+    box-shadow: 0 0 8px rgba(76, 76, 141);
+    border-radius: 10px;
     margin-top:12.5vh;
-    padding: 2.5vh;
+    padding: 5vh;
+    max-width: fit-content;
+}
+p.username_area {
+    font-size: large;
+}
+p.password_area {
+    font-size: large;
 }
 p.poster_name {
     font-weight: bold;

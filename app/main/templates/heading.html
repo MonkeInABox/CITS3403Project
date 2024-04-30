@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="{{ url_for('static',filename='styleguide.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap">
   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       {% if title %}
       <title>{{ title }} - CITS3403</title>
       {% else %}
@@ -11,35 +12,38 @@
       {% endif %}
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-custom sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom sticky-top">
       <a class="navbar-brand" href="{{ url_for('main.index') }}" style="margin-left: 2.5%;"> <img src="{{ url_for('static',filename='recollective_logo.png') }}" alt="recollective logo" height="40vh"> recollective.</a>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
           <li>
-          <a class = "nav-link" href="{{ url_for('auth.login') }}">Films</a>
+            <a class = "nav-link" href="{{ url_for('auth.login') }}">Films</a>
           </li>
           <li>
-          <a class = "nav-link" href="{{ url_for('auth.login') }}">Music</a>
+            <a class = "nav-link" href="{{ url_for('auth.login') }}">Music</a>
           </li>
           <li>
-          <a class = "nav-link" href="{{ url_for('auth.login') }}">Books</a>
+            <a class = "nav-link" href="{{ url_for('auth.login') }}">Books</a>
           </li>
           <li>
-          <a class = "nav-link" href="{{ url_for('main.profile') }}">Profile</a>
+            <a class = "nav-link" href="{{ url_for('main.profile') }}">Profile</a>
           </li>
           {% if current_user.is_anonymous %}
           <li>
-          <a class = "nav-link" style="float: right" href="{{ url_for('auth.login') }}">Login</a>
+            <a class = "nav-link" style="float: right" href="{{ url_for('auth.login') }}">Login</a>
           </li>
           {% else %}
           <li>
-          <a class = "nav-link" href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a>
+            <a class = "nav-link" href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a>
           </li>
           <li>
-          <a class = "nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+            <a class = "nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
           </li>
           <li>
-          <a class = "nav-link" href="{{ url_for('main.newpost') }}">New Post</a>
+            <a class = "nav-link" href="{{ url_for('main.newpost') }}">New Post</a>
           </li>
           {% endif %}
         </ul>
