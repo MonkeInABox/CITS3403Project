@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from app.models import User
 from urllib.parse import urlsplit
 from app.auth import bp
-from app import db, verify_captcha
+from app import db
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -39,12 +39,6 @@ def register():
         return redirect(url_for('profile', username=current_user.username))
     form = RegistrationForm()
     if form.validate_on_submit():
-        # CAPTCHA validation
-        captcha_response = request.form.get('g-recaptcha-response')
-        captcha_valid, error_message = verify_captcha(captcha_response)
-        if not captcha_valid:
-            return redirect(url_for('auth.register'))
-
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
