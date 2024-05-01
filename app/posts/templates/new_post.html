@@ -4,6 +4,10 @@
     <h1>New Post</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
+        <p> 
+            {{ form.category.label }}<br>
+            {{ form.category }}<br>
+        </p>
         <p>
             {{ form.body.label }}<br>
             {{ form.body(size=32) }}<br>
