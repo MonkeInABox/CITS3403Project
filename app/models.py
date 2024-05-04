@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from flask import current_app, request
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -45,7 +46,7 @@ class Post(db.Model):
 
     body: so.Mapped[str] = so.mapped_column(sa.String(200))
 
-    category: so.Mapped[str] = so.mapped_column(sa.String(40), index=True)
+    category: so.Mapped[str] = so.mapped_column(sa.String(4), index=True)
 
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     
@@ -62,6 +63,12 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+    
+    def get_posts_by_cat(category):
+        page = request.args.get('page', 1, type=int)
+        query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
+        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+        return posts
     
 @login.user_loader
 def load_user(id):
