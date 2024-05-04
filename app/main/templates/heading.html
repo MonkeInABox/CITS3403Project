@@ -20,13 +20,13 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li>
-            <a class = "nav-link" href="{{ url_for('auth.login') }}">Films</a>
+            <a class = "nav-link" href="{{ url_for('posts.categories', category='Films') }}">Films</a>
           </li>
           <li>
-            <a class = "nav-link" href="{{ url_for('auth.login') }}">Music</a>
+            <a class = "nav-link" href="{{ url_for('posts.categories', category='Music') }}">Music</a>
           </li>
           <li>
-            <a class = "nav-link" href="{{ url_for('auth.login') }}">Books</a>
+            <a class = "nav-link" href="{{ url_for('posts.categories', category='Books') }}">Books</a>
           </li>
           <li>
             <a class = "nav-link" href="{{ url_for('main.profile') }}">Profile</a>
@@ -43,7 +43,7 @@
             <a class = "nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
           </li>
           <li>
-            <a class = "nav-link" href="{{ url_for('main.newpost') }}">New Post</a>
+            <a class = "nav-link" href="{{ url_for('posts.newpost') }}">New Post</a>
           </li>
           {% endif %}
         </ul>
