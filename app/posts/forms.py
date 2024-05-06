@@ -3,7 +3,7 @@ from wtforms import SubmitField, TextAreaField, SelectField
 from wtforms.validators import Length
 
 class PostNewPost(FlaskForm):
-    body = TextAreaField('Post Body', validators=[Length(min=0, max=200)])
+    body = TextAreaField('Post Body', validators=[Length(min=0, max=200)], id="post")
     category = SelectField('What category is this post?',
                            choices=[
                                ('film', 'Films'),   # DO NOT GO ABOVE 4 CHARS FOR DATABASE VALUE
