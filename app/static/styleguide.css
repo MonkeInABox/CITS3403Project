@@ -3,6 +3,9 @@ body {
     margin: 2%;
     margin-top: 0%;
 }
+h1 {
+    text-align: center;
+}
 nav {
     background-color: rgb(76, 76, 141) !important;
     margin-left: -2% !important;
@@ -14,12 +17,20 @@ nav {
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
 }
-#submit {
-    background-color: rgb(76, 76, 141);
-    border-radius: 10px;
-    color: aliceblue;
-    border: none;
-    padding: 2vh;
+form textarea#post {
+    margin-left: 20vw;
+    width: 60vw;
+    height: 40vh;
+    max-width: 60vw;
+}
+div.new_post_page {
+    text-align: center;
+}
+div.input_text {
+    width: 60vw;
+}
+p.comment_submit {
+    margin-left: 10vw;
 }
 h1.greeting {
     text-align: center;
@@ -39,27 +50,56 @@ p.username_area {
 p.password_area {
     font-size: large;
 }
-p.poster_name {
+table.profile_page {
+    text-align: center;
+    margin: auto;
+}
+img.profile_pic {
+    border-radius: 40px;
+    box-shadow: 0 0 8px rgba(76, 76, 141);
+}
+td.edit_profile > p {
+    background-color: rgba(76, 76, 141, 0.544);
+    border-radius: 10px;
+    max-height: min-content;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    margin-top: 30vh;
+}
+.poster_name {
     font-weight: bold;
     size: 5vh;
     background-color: rgba(76, 76, 141, 0.544);
     color: #152238;
     margin-top: 2vh;
+    margin-left: 0;
     max-width: fit-content;
-    padding: 2vh;
-    border-radius: 10px;
+    padding: 0.7em;
+    padding-right: 1.3em;
+    border-radius: 10px 0 0 10px;
 }
-td.post_body {
+.about_me {
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
-    border-width: 3px;
-    padding: 5vh;
-    padding-top: 2vh;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 10px;
+    margin-left: 10px;
 }
-div.posts {
+.post_body {
+    border: rgba(76, 76, 141) solid 0.2em;
+    border-radius: 0 10px 10px 0;
+    margin-left: 0;
+    padding-top: 1.12em;
+    padding-bottom: 1.36em;
+    padding-left: 1em;
+    padding-right: 2em;
+}
+.posts {
     margin-right: 20vw;
 }
-p.comment {
+.comment {
     margin-left: 12vw;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
@@ -67,12 +107,19 @@ p.comment {
     padding: 5vh;
     padding-top: 2vh;
 }
-p.commenter {
+.commenter {
     margin-left: 10vw;
     font-weight: bold;
 }
-td.replies_heading {
+.replies_heading {
     font-weight: bolder;
     color: rgb(76, 76, 141);
-    padding-left: 10vw;
+    margin-top: 10vh;
+}
+#submit {
+    background-color: rgb(76, 76, 141);
+    border-radius: 10px;
+    color: aliceblue !important;
+    border: none;
+    padding: 2vh;
 }

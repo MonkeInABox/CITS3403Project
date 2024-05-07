@@ -1,9 +1,9 @@
-<table>
-    <tr valign="top">
-        <td><img src="{{ post.author.avatar(40) }}"> <br> <p class="poster_name">{{ post.author.username }}</p></td>
-        <td class="post_body">{{ post.body }} postid: {{ post.id }} postauthorid: {{ post.author.id }}</td>
-    </tr>
-    <tr>
-        <td class = "replies_heading">Replies:</td>
-    </tr>
-</table>
+<div style="display: flex; flex-direction: column; width: 80vw;">
+    <div valign="top" style="width: 100vw;">
+        <span class="poster_name" style="display: inline-block;"><img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}"> {{ post.author.username }}</span>
+        <span style="display: inline-block;" class="post_body">{{ post.body }}<!--postid: {{ post.id }} postauthorid: {{ post.author.id }}--></span>
+    </div>
+    <div>
+        <span style="margin-left: 10vw;" class = "replies_heading">Replies:</span>
+    </div>
+</div>
