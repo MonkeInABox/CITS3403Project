@@ -5,6 +5,7 @@ Repository for CITS3403 Project
 |--------|------|------------------|
 | 23390554 | Jeremy Butson | MonkeInABox |
 | 23135002 | Joel Willoughby | Jamlons   |
+| 23690864 | Lim Kar Yee Megan | m3ganz   |
 
 Enter: `flask run`  
 
