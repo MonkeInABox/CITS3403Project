@@ -10,8 +10,8 @@
             {{ form.category }}<br>
         </p>
         <p>
-            {{ form.body.label }}<br>
-            <div class="input_text">{{ form.body(size=300) }}</div><br>
+            Input your post here!<br>
+            <div class="input_text">{{ form.body(size=100) }}</div><br>
             {% for error in form.body.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}

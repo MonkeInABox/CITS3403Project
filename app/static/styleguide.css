@@ -1,35 +1,51 @@
-body {
+body:not(.navbar-custom) {
     font-family: "IBM Plex Sans", sans-serif;
-    margin: 2%;
     margin-top: 0%;
 }
 h1 {
     text-align: center;
 }
-nav {
-    background-color: rgb(76, 76, 141) !important;
-    margin-left: -2% !important;
-    margin-right: -2% !important;
-}
 .error {
     background-color: red;
 }
+.page_body {
+    margin: 2%;
+    margin-top: 0%;
+}
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }
 form textarea#post {
-    margin-left: 20vw;
     width: 60vw;
     height: 40vh;
     max-width: 60vw;
 }
-div.new_post_page {
+select {
+    outline: none;
+    border: none;
+    background-color: rgb(76, 76, 141);
+    color: white;
+    border-radius: 0.5em;
+    padding-left: 1em;
+    height: 2em;
+    width: auto;
+}
+.new_post_page {
     text-align: center;
+    box-shadow: 0 0 8px rgba(76, 76, 141);
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-right: 5vw;
+    margin-left: 5vw;
+    width: auto;
 }
-div.input_text {
-    width: 60vw;
-}
-p.comment_submit {
+.comment_submit {
     margin-left: 10vw;
 }
 h1.greeting {
@@ -91,16 +107,15 @@ td.edit_profile > p {
     border: rgba(76, 76, 141) solid 0.2em;
     border-radius: 0 10px 10px 0;
     margin-left: 0;
+    width: 70vw;
     padding-top: 1.12em;
     padding-bottom: 1.36em;
     padding-left: 1em;
     padding-right: 2em;
 }
-.posts {
-    margin-right: 20vw;
-}
 .comment {
     margin-left: 12vw;
+    width: 78vw;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
     border-width: 3px;
