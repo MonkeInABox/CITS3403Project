@@ -20,6 +20,16 @@ h1 {
     margin-right: auto;
     margin-left: auto;
 }
+.sidebar {
+    background-color: rgb(209, 196, 233) !important;
+    width: 250px;
+    padding: 20px;
+    position: fixed; 
+    top: 60px; 
+    right:0;
+    bottom: 0; 
+    overflow-y: auto; 
+}
 form textarea#post {
     width: 60vw;
     height: 40vh;
@@ -47,7 +57,9 @@ select {
 }
 .comment_submit {
     margin-left: 10vw;
-}
+
+
+
 h1.greeting {
     text-align: center;
 }
