@@ -6,7 +6,6 @@
     <title>Sidebar</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='styleguide.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="container-fluid">
@@ -15,33 +14,31 @@
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <p class="nav-link"><i class="fas fa-home"></i> Welcome, {{ current_user.username if current_user.is_authenticated else 'Guest' }}</p>
+                            <p class="nav-link"><i class="bi bi-house-door"></i> Welcome, {{ current_user.username if current_user.is_authenticated else 'Guest' }}</p>
                         </li>
                         {% if current_user.is_anonymous %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                            <a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Login</a>
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> View Profile</a>
+                            <a class="nav-link" href="{{ url_for('main.profile') }}"><i class="bi bi-person"></i> View Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.edit_profile') }}"><i class="fas fa-edit"></i> Edit Profile</a>
+                            <a class="nav-link" href="{{ url_for('main.edit_profile') }}"><i class="bi bi-pencil-square"></i> Edit Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.profile') }}"><i class="fas fa-clock rotate-left"></i> Recent Posts</a>
+                            <a class="nav-link" href="#"><i class="bi bi-clock"></i> Recent Posts</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('posts.newpost') }}"><i class="fas fa-plus"></i> Create New Post</a>
+                            <a class="nav-link" href="{{ url_for('posts.newpost') }}"><i class="bi bi-plus"></i> Create New Post</a>
                         </li>
                         {% endif %}
-                        
-
                     </ul>
                 </div>
             </nav>
         </div>
     </div>
-
 </body>
 </html>
+
