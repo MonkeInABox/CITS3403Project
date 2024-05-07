@@ -35,6 +35,6 @@ Enter: `flask db upgrade`
 
 #### If you want to reset the database  
 delete migrations and app.db
-Enter: `flask db init`
+Enter: `flask db init`  
 Enter: `flask db migrate`  
 Enter: `flask db upgrade base`
