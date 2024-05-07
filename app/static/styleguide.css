@@ -26,6 +26,7 @@ h1 {
     padding: 20px;
     position: fixed; 
     top: 60px; 
+    right: 0; 
     right:0;
     bottom: 0; 
     overflow-y: auto; 
@@ -57,9 +58,7 @@ select {
 }
 .comment_submit {
     margin-left: 10vw;
-
-
-
+}
 h1.greeting {
     text-align: center;
 }

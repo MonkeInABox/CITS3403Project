@@ -17,24 +17,25 @@
                         <li class="nav-item">
                             <p class="nav-link"><i class="fas fa-home"></i> Welcome, {{ current_user.username if current_user.is_authenticated else 'Guest' }}</p>
                         </li>
+                        {% if current_user.is_anonymous %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        </li>
+                        {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> View Profile</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('main.edit_profile') }}"><i class="fas fa-edit"></i> Edit Profile</a>
                         </li>
-                        {% if current_user.is_anonymous %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.profile') }}"><i class="fas fa-clock rotate-left"></i> Recent Posts</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('posts.newpost') }}"><i class="fas fa-plus"></i> Create New Post</a>
                         </li>
-                        {% if current_user.is_anonymous %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
-                        </li>
                         {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fas fa-clock rotate-left"></i> Recent Posts</a>
-                        </li>
+                        
 
                     </ul>
                 </div>
