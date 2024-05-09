@@ -1,18 +1,13 @@
 {% extends "heading.html" %}
 
 {% block content %}
-    <table class="profile_page">
-        <tr valign="top">
+    <table class="profile_page" style="margin-right: 20vw;">
+        <tr valign="top" style="max-width: 90%;">
             <td>
                 <img src="{{ user.avatar(128) }}" class="profile_pic">
                 <h1 style="padding-top: 5%;">{{ user.username }}</h1>
                 {% if user.about_me %}<p>About me:</p><p class="about_me">{{ user.about_me }}</p>{% endif %}
                 {% if user.last_seen %}<p class="last_seen">Last seen on: {{ user.last_seen }}</p>{% endif %}
-            </td>
-            <td class = "edit_profile">
-                {% if user == current_user %}
-                <p><a href="{{ url_for('main.edit_profile') }}" style="text-decoration: none; color: white;"><i class="material-icons">edit</i><br>Edit your profile</a></p>
-                {% endif %}
             </td>
         </tr>
             <tr style="text-align: left;">

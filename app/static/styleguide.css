@@ -9,19 +9,20 @@ h1 {
     background-color: red;
 }
 .page_body {
-    margin: 2%;
+    margin-left: 2%;
     margin-top: 0%;
+    max-width: 98%;
 }
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
     width: 100%;
     padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+    padding-left: 25px;
 }
 .sidebar {
     background-color: rgb(209, 196, 233) !important;
+    text-decoration: none;
+    color: #152238;
     width: 250px;
     padding: 20px;
     position: fixed; 
@@ -30,7 +31,9 @@ h1 {
     right:0;
     bottom: 0; 
     overflow-y: auto; 
+    text-align: center;
 }
+.navbar-
 form textarea#post {
     width: 60vw;
     height: 40vh;
@@ -59,15 +62,17 @@ select {
 .comment_submit {
     margin-left: 10vw;
 }
-h1.greeting {
+.greeting {
     text-align: center;
 }
 div.sign_in {
     margin: auto;
+    height: min-content;
     text-align: center;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
-    margin-top:12.5vh;
+    margin-top:2.5vh;
+    margin-bottom: 2.5vh;
     padding: 5vh;
     max-width: fit-content;
 }
@@ -79,11 +84,24 @@ p.password_area {
 }
 table.profile_page {
     text-align: center;
-    margin: auto;
+    width: 80vw;
+    max-width: 98%;
 }
 img.profile_pic {
     border-radius: 40px;
     box-shadow: 0 0 8px rgba(76, 76, 141);
+}
+.page_image {
+    margin-left: 50%; 
+    width: 5vh; 
+    padding-top: 3em;
+    transition: 0.3s;
+}
+.page_image:hover {
+    width: 6vh;
+}
+#login {
+    align-items: right !important;
 }
 td.edit_profile > p {
     background-color: rgba(76, 76, 141, 0.544);
@@ -113,12 +131,16 @@ td.edit_profile > p {
     padding-bottom: 5px;
     margin-right: 10px;
     margin-left: 10px;
+    width: 55vw;
+}
+.edit_profile_page {
+    text-align: center;
 }
 .post_body {
     border: rgba(76, 76, 141) solid 0.2em;
     border-radius: 0 10px 10px 0;
     margin-left: 0;
-    width: 70vw;
+    width: 50vw;
     padding-top: 1.12em;
     padding-bottom: 1.36em;
     padding-left: 1em;
@@ -126,7 +148,7 @@ td.edit_profile > p {
 }
 .comment {
     margin-left: 12vw;
-    width: 78vw;
+    width: 60vw;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
     border-width: 3px;

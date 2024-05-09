@@ -31,24 +31,22 @@
               <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('posts.categories', category='Books') }}">Books</a>
               </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a>
-              </li>
               {% if current_user.is_anonymous %}
               <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                  <a class="nav-link" id="login" href="{{ url_for('auth.login') }}">Login</a>
               </li>
               {% else %}
               <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('posts.newpost') }}">New Post</a>
+                  <a class="nav-link" id="login" href="{{ url_for('auth.logout') }}">Logout</a>
               </li>
               {% endif %}
           </ul>
       </div>
     </nav>
+
+    {% include 'sidebar.html' %}
+    <a href="{{ url_for('main.index') }}"><img src="/static/recollective_logo.png" class = "page_image"></a>
+    <div class="page_body" style="max-width: 98%;">
 
     {% include 'sidebar.html' %}
     <div class="page_body">

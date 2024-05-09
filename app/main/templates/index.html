@@ -1,15 +1,6 @@
 {% extends "heading.html" %}
 
 {% block content %}
-    {% if current_user.is_anonymous %}
-    <h1 class="greeting">Hi!</h1>
-    <h2 style="text-align: center;">Welcome to recollective! Sign in to get started!</h2>
-    <br>
-    {% else %}
-    <h1 class = "greeting">Hi, {{ current_user.username }}!</h1>
-    <h2 style="text-align: center;">Welcome back! Click on a topic or browse the homepage!</h2>
-    <br>
-    {% endif %}
     {% for post in posts %}
     <div class="posts">
     <p class = "post">
