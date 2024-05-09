@@ -4,6 +4,8 @@ Repository for CITS3403 Project
 | UWA ID | Name | Github User Name |
 |--------|------|------------------|
 | 23390554 | Jeremy Butson | MonkeInABox |
+| 23135002 | Joel Willoughby | Jamlons   |
+| 23690864 | Lim Kar Yee Megan | m3ganz   |
 
 Enter: `flask run`  
 
@@ -33,5 +35,7 @@ Enter: `flask db migrate`
 Enter: `flask db upgrade`
 
 #### If you want to reset the database  
+delete migrations and app.db   
+Enter: `flask db init`   
 Enter: `flask db migrate`  
 Enter: `flask db upgrade base`
