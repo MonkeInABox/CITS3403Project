@@ -1,12 +1,13 @@
 import requests
 from flask import render_template, flash, redirect, url_for, request, current_app
 from app.auth.forms import LoginForm, RegistrationForm
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app.models import User
 from urllib.parse import urlsplit
 from app.auth import bp
-from app import db
+from app import db, mail
+from flask_mail import Message
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -50,3 +51,43 @@ def register():
             next_page = url_for('main.index')
         return redirect(url_for('main.profile', username=current_user.username))
     return render_template('registration.html', title='Register', form=form, current_app=current_app)
+
+@bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = User.confirm_password_reset_token(token)
+    
+    if not email:
+        # Token is invalid or has expired
+        return "Invalid or expired token.", 400  # Bad request
+    
+    # If valid, handle the password reset logic (like showing a form for a new password)
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        # Reset the user's password in your database (pseudo code)
+        # user = User.query.filter_by(email=email).first()
+        # user.set_password(new_password)
+        # db.session.commit()
+        return "Password has been reset successfully.", 200
+    
+    # Render a form for the user to enter their new password
+    return '''
+        <form method="post">
+            New Password: <input type="password" name="new_password">
+            <input type="submit" value="Reset Password">
+        </form>
+    '''
+
+@bp.route('/send-reset/<username>', methods=['POST', 'GET'])
+@login_required
+def send_reset(username):
+    token = User.generate_password_reset_token(current_user.email)
+    reset_url = url_for('auth.reset_password', token=token, _external=True)  # Full URL
+
+    msg = Message(
+        "Password Reset Request",
+        sender="jw2151788@gmail.com",
+        recipients=[current_user.email],
+        body=f"To reset your password, click the following link: {reset_url}"
+    )
+
+    mail.send(msg)

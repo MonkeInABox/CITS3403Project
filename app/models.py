@@ -8,6 +8,7 @@ from flask_login import UserMixin
 from app import login
 from hashlib import md5
 from app import db
+from itsdangerous import URLSafeTimedSerializer
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -38,6 +39,20 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+    
+    def generate_password_reset_token(email):
+        # Generate a token that expires in 1 hour (3600 seconds)
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return serializer.dumps(email, salt='password-reset-salt')
+
+    def confirm_password_reset_token(token, max_age=3600):
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            # Load and validate the token
+            email = serializer.loads(token, salt='password-reset-salt', max_age=max_age)
+            return email
+        except Exception:
+            return None
         
     
 

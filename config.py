@@ -10,3 +10,9 @@ class Config:
     POSTS_PER_PAGE = 3
     RECAPTCHA_PUBLIC_KEY = "6LdpN8ApAAAAADm-N-ukFFHYR1jjsuFCuzY7o2yv"
     RECAPTCHA_PRIVATE_KEY = "6LdpN8ApAAAAAOfh7IfhskbyqU35uhqet9yoMaSi"
+    MAIL_SERVER = "smtp.gmail.com"
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
+    MAIL_USERNAME = "jw2151788@gmail.com"
+    MAIL_PASSWORD = "krik unac ipdn dnal"
