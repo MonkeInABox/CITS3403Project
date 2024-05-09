@@ -2,11 +2,11 @@
     {{ comment_form.hidden_tag() }}
     <input type="hidden" name="post_id" value=" {{ post.id }}">
     <p style="padding-left:10vw">
-        {{ comment_form.body.label }} <br>
+        Reply with your suggestions! <br>
         {{ comment_form.body(size=200) }} <br>
         {% for error in comment_form.body.errors %}
         <span style="color: red;">{{ error }}</span>
         {% endfor %}
     </p>
-    <p> {{ comment_form.submit() }}</p>
+    <p class="comment_submit"> {{ comment_form.submit() }}</p>
 </form>

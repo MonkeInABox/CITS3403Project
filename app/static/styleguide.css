@@ -1,35 +1,78 @@
-body {
+body:not(.navbar-custom) {
     font-family: "IBM Plex Sans", sans-serif;
-    margin: 2%;
     margin-top: 0%;
 }
-nav {
-    background-color: rgb(76, 76, 141) !important;
-    margin-left: -2% !important;
-    margin-right: -2% !important;
+h1 {
+    text-align: center;
 }
 .error {
     background-color: red;
 }
+.page_body {
+    margin-left: 2%;
+    margin-top: 0%;
+    max-width: 98%;
+}
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 25px;
 }
-#submit {
-    background-color: rgb(76, 76, 141);
-    border-radius: 10px;
-    color: aliceblue;
+.sidebar {
+    background-color: rgb(209, 196, 233) !important;
+    text-decoration: none;
+    color: #152238;
+    width: 250px;
+    padding: 20px;
+    position: fixed; 
+    top: 60px; 
+    right: 0; 
+    right:0;
+    bottom: 0; 
+    overflow-y: auto; 
+    text-align: center;
+}
+.navbar-
+form textarea#post {
+    width: 60vw;
+    height: 40vh;
+    max-width: 60vw;
+}
+select {
+    outline: none;
     border: none;
-    padding: 2vh;
+    background-color: rgb(76, 76, 141);
+    color: white;
+    border-radius: 0.5em;
+    padding-left: 1em;
+    height: 2em;
+    width: auto;
 }
-h1.greeting {
+.new_post_page {
+    text-align: center;
+    box-shadow: 0 0 8px rgba(76, 76, 141);
+    border-radius: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-right: 5vw;
+    margin-left: 5vw;
+    width: auto;
+}
+.comment_submit {
+    margin-left: 10vw;
+}
+.greeting {
     text-align: center;
 }
 div.sign_in {
     margin: auto;
+    height: min-content;
     text-align: center;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
-    margin-top:12.5vh;
+    margin-top:2.5vh;
+    margin-bottom: 2.5vh;
     padding: 5vh;
     max-width: fit-content;
 }
@@ -39,40 +82,92 @@ p.username_area {
 p.password_area {
     font-size: large;
 }
-p.poster_name {
+table.profile_page {
+    text-align: center;
+    width: 80vw;
+    max-width: 98%;
+}
+img.profile_pic {
+    border-radius: 40px;
+    box-shadow: 0 0 8px rgba(76, 76, 141);
+}
+.page_image {
+    margin-left: 50%; 
+    width: 5vh; 
+    padding-top: 3em;
+    transition: 0.3s;
+}
+.page_image:hover {
+    width: 6vh;
+}
+#login {
+    align-items: right !important;
+}
+td.edit_profile > p {
+    background-color: rgba(76, 76, 141, 0.544);
+    border-radius: 10px;
+    max-height: min-content;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    margin-top: 30vh;
+}
+.poster_name {
     font-weight: bold;
     size: 5vh;
     background-color: rgba(76, 76, 141, 0.544);
     color: #152238;
     margin-top: 2vh;
+    margin-left: 0;
     max-width: fit-content;
-    padding: 2vh;
-    border-radius: 10px;
+    padding: 0.7em;
+    padding-right: 1.3em;
+    border-radius: 10px 0 0 10px;
 }
-td.post_body {
+.about_me {
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
-    border-width: 3px;
-    padding: 5vh;
-    padding-top: 2vh;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 10px;
+    margin-left: 10px;
+    width: 55vw;
 }
-div.posts {
-    margin-right: 20vw;
+.edit_profile_page {
+    text-align: center;
 }
-p.comment {
+.post_body {
+    border: rgba(76, 76, 141) solid 0.2em;
+    border-radius: 0 10px 10px 0;
+    margin-left: 0;
+    width: 50vw;
+    padding-top: 1.12em;
+    padding-bottom: 1.36em;
+    padding-left: 1em;
+    padding-right: 2em;
+}
+.comment {
     margin-left: 12vw;
+    width: 60vw;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
     border-width: 3px;
     padding: 5vh;
     padding-top: 2vh;
 }
-p.commenter {
+.commenter {
     margin-left: 10vw;
     font-weight: bold;
 }
-td.replies_heading {
+.replies_heading {
     font-weight: bolder;
     color: rgb(76, 76, 141);
-    padding-left: 10vw;
+    margin-top: 10vh;
+}
+#submit {
+    background-color: rgb(76, 76, 141);
+    border-radius: 10px;
+    color: aliceblue !important;
+    border: none;
+    padding: 2vh;
 }

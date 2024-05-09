@@ -7,7 +7,7 @@ class EditProfileForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class PostNewComment(FlaskForm):
-    body = TextAreaField('Post Comment', validators=[Length(min=0, max=200)])
+    body = TextAreaField('Post Comment', validators=[Length(min=1, max=200)])
     submit = SubmitField('Submit Comment')
 
 class SearchForm(FlaskForm):
