@@ -1,9 +1,18 @@
 <div style="display: flex; flex-direction: column; width: 100vw;">
     <div valign="top" style="width: 80vw;">
-        <span class="poster_name" style="display: inline-block;"><img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}"> {{ post.author.username }}</span>
-        <span style="display: inline-block;" class="post_body">{{ post.body }}<!--postid: {{ post.id }} postauthorid: {{ post.author.id }}--></span>
+        <a href="{{ url_for('main.profile', username=post.author.username) }}">
+            <img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}">
+        </a>
+        <span class="poster_name" style="display: inline-block;">
+            <a href="{{ url_for('main.profile', username=post.author.username) }}">
+                {{ post.author.username }}
+            </a>
+        </span>
+        <span style="display: inline-block;" class="post_body">
+            {{ post.body }}<!--postid: {{ post.id }} postauthorid: {{ post.author.id }}-->
+        </span>
     </div>
     <div>
-        <span style="margin-left: 10vw;" class = "replies_heading">Replies:</span>
+        <span style="margin-left: 10vw;" class="replies_heading">Replies:</span>
     </div>
 </div>
