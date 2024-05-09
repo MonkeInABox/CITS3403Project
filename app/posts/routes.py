@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app.posts.forms import PostNewPost
-from app.main.forms import PostNewComment
+from app.main.forms import PostNewComment, SearchForm
 from flask_login import current_user, login_required
 from app.models import Post, Comment
 from app.posts import bp
@@ -19,6 +19,12 @@ def newpost():
         return redirect(url_for('main.index'))
     elif request.method == 'GET':
         return render_template('new_post.html', form=form)
+    
+#Pass stuff to navbar
+@bp.context_processor
+def heading():
+    form = SearchForm()
+    return dict(form=form)
     
 # Categories (can split if need be later on)
 @bp.route('/categories/', defaults={'category': None}, methods=['GET'])
