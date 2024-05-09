@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, current_app
-from app.main.forms import EditProfileForm, PostNewComment
+from app.main.forms import EditProfileForm, PostNewComment, SearchForm
 from flask_login import current_user, login_required
 import sqlalchemy as sa
 from app.models import User, Post, Comment
@@ -94,5 +94,31 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
+#Pass stuff to navbar
+@bp.context_processor
+def heading():
+    form = SearchForm()
+    return dict(form=form)
 
-    
+#Search Page
+@bp.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    if form.validate_on_submit():
+        search_term = form.searched.data
+    page = request.args.get('page', 1, type=int)
+
+    query = sa.select(Post).filter(Post.body.like('%' + search_term + '%')).order_by(Post.timestamp.desc())
+    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+
+    if posts.has_next:
+        next_url = url_for('main.search', page=posts.next_num)
+    else:
+        next_url = None
+
+    if posts.has_prev:
+        prev_url = url_for('main.search', page=posts.prev_num)
+    else:
+        prev_url = None
+
+    return render_template('search.html', title='Search', form = form, search_term = search_term, posts = posts.items, next_url = next_url, prev_url = prev_url)
