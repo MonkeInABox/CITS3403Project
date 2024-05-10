@@ -1,6 +1,7 @@
 import requests
 from flask import render_template, flash, redirect, url_for, request, current_app
 from app.auth.forms import LoginForm, RegistrationForm
+from app.main.forms import PostNewComment
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app.models import User
@@ -58,26 +59,20 @@ def reset_password(token):
     
     if not email:
         # Token is invalid or has expired
-        return "Invalid or expired token.", 400  # Bad request
+        return render_template('errors/invalid_token.html')
     
     # If valid, handle the password reset logic (like showing a form for a new password)
     if request.method == 'POST':
         new_password = request.form.get('new_password')
-        # Reset the user's password in your database (pseudo code)
-        # user = User.query.filter_by(email=email).first()
-        # user.set_password(new_password)
-        # db.session.commit()
+        user = User.query.filter_by(email=email).first()
+        user.set_password(new_password)
+        db.session.commit()
         return "Password has been reset successfully.", 200
     
     # Render a form for the user to enter their new password
-    return '''
-        <form method="post">
-            New Password: <input type="password" name="new_password">
-            <input type="submit" value="Reset Password">
-        </form>
-    '''
+    return render_template('passwordreset.html')
 
-@bp.route('/send-reset/<username>', methods=['POST', 'GET'])
+@bp.route('/send-reset/', methods=['POST', 'GET'])
 @login_required
 def send_reset(username):
     token = User.generate_password_reset_token(current_user.email)
@@ -85,9 +80,9 @@ def send_reset(username):
 
     msg = Message(
         "Password Reset Request",
-        sender="jw2151788@gmail.com",
+        sender=current_app.config['MAIL_USERNAME'],
         recipients=[current_user.email],
-        body=f"To reset your password, click the following link: {reset_url}"
+        body=f"To reset your password, click the following link (it will expire in 1 hour): {reset_url}"
     )
 
     mail.send(msg)
