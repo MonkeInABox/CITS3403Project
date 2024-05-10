@@ -1,10 +1,10 @@
-import requests
 import threading
 from flask import render_template, flash, redirect, url_for, request, current_app
 from app.auth.forms import LoginForm, RegistrationForm, UsernameForm
 from app.main.forms import SearchForm
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
+from sqlalchemy.sql.expression import collate
 from app.models import User
 from urllib.parse import urlsplit
 from app.auth import bp
@@ -24,7 +24,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Get user from database
-        user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
+        user = db.session.scalar(sa.select(User).where(collate(User.username, 'NOCASE') == form.username.data))
         # If user exists in database (so the user object isn't empty) check password
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'error')
@@ -90,12 +90,12 @@ def send_reset(username):
         form = UsernameForm()
         if form.validate_on_submit():
             # Redirect to the route with the username
-            return redirect(url_for('auth.send-reset', username=form.username.data))
+            return redirect(url_for('auth.send_reset', username=form.username.data))
         return render_template('enter_username.html', form=form)  # Create a template to collect the username
 
     # Now handle the case when we have a username (either from parameter or from current_user)
     if username:
-        user = db.first_or_404(sa.select(User).where(User.username == username))
+        user = db.first_or_404(sa.select(User).where(collate(User.username, 'NOCASE') == username))
     else:
         user = current_user
     
