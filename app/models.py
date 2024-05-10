@@ -85,6 +85,7 @@ class Post(db.Model):
         posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
         return posts
     
+    
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

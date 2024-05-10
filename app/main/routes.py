@@ -7,6 +7,12 @@ from datetime import datetime, timezone
 from app.main import bp
 from app import db
 
+#Pass stuff to navbar
+@bp.context_processor
+def heading():
+    form = SearchForm()
+    return dict(form=form)
+
 # What to do before calling anything else
 @bp.before_app_request
 def before_request():
@@ -48,7 +54,7 @@ def index():
 
     return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form)
 
-# Main profile page
+# Main profile page 
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])
 @bp.route('/profile/<username>', methods=['GET'])
 def profile(username):
@@ -93,12 +99,6 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
-
-#Pass stuff to navbar
-@bp.context_processor
-def heading():
-    form = SearchForm()
-    return dict(form=form)
 
 #Search Page
 @bp.route('/search', methods=['POST'])

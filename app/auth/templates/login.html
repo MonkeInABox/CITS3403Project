@@ -23,5 +23,6 @@
         <p class="sign_in_button">{{ form.submit() }}</p>
     </form>
     <p class="new_user">New User? <a href="{{ url_for('auth.register') }}" style="text-decoration: underline; color: inherit;">Click to Register!</a></p>
+    <p class="new_user">Can't Log In? <a href="{{ url_for('auth.send_reset') }}" style="text-decoration: underline; color: inherit;">Click to Reset Password!</a></p>
 </div>
 {% endblock %}
