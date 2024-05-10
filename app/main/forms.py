@@ -13,3 +13,6 @@ class PostNewComment(FlaskForm):
 class SearchForm(FlaskForm):
     searched = StringField("Searched", validators=[DataRequired()])
     submit = SubmitField("Submit Search")
+
+class Delete(FlaskForm):
+    submit = SubmitField("Delete")

@@ -9,8 +9,11 @@
             </a>
         </span>
         <span style="display: inline-block;" class="post_body">
-            {{ post.body }}<!--postid: {{ post.id }} postauthorid: {{ post.author.id }}-->
+            {{ post.body }}postid: {{ post.id }} postauthorid: {{ post.author.id }}
         </span>
+            {% if current_user is none or current_user.id == post.author.id %}
+            <a href="{{ url_for('main.delete_post', post_id=post.id) }}">Delete Post</a>
+            {% endif %}
     </div>
     <div>
         <span style="margin-left: 10vw;" class="replies_heading">Replies:</span>

@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, current_app
-from app.main.forms import EditProfileForm, PostNewComment, SearchForm
+from app.main.forms import EditProfileForm, PostNewComment, SearchForm, Delete
 from flask_login import current_user, login_required
 import sqlalchemy as sa
 from app.models import User, Post, Comment
@@ -52,7 +52,7 @@ def index():
     else:
         prev_url = None
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form)
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user)
 
 # Main profile page 
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])
@@ -84,7 +84,7 @@ def profile(username):
     prev_url = url_for('main.profile', username=username, page=posts.prev_num) if posts.has_prev else None
 
     # Render the profile page with user information and posts
-    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url)
+    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url, username=username)
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -122,3 +122,36 @@ def search():
         prev_url = None
 
     return render_template('search.html', title='Search', form = form, search_term = search_term, posts = posts.items, next_url = next_url, prev_url = prev_url)
+
+@bp.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
+def delete_post(post_id):
+    form = Delete()
+    if form.validate_on_submit():
+        post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+        db.session.delete(post)
+        db.session.commit()
+        flash('Post deleted', 'info')
+        return redirect(url_for('main.index'))
+    return render_template('delete_post.html', form=form)
+
+@bp.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+def delete_user(user_id):
+    form = Delete()
+    user = db.first_or_404(sa.select(User).where(User.id == user_id))
+    if form.validate_on_submit():
+        db.session.delete(user)
+        db.session.commit()
+        flash('User deleted', 'info')
+        return redirect(url_for('main.index'))
+    return render_template('delete_user.html', form=form, user=user)
+
+@bp.route('/delete_comment/<int:comment_id>', methods=['GET', 'POST'])
+def delete_comment(comment_id):
+    form = Delete()
+    if form.validate_on_submit():
+        comment = db.first_or_404(sa.select(Comment).where(Comment.id == comment_id))
+        db.session.delete(comment)
+        db.session.commit()
+        flash('Comment deleted', 'info')
+        return redirect(url_for('main.index'))
+    return render_template('delete_comment.html', form=form)

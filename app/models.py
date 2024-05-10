@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
 
     posts: so.Mapped[list['Post']] = so.relationship('Post', back_populates='author', lazy="dynamic", cascade="all, delete-orphan")
     
-    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter")
+    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter", cascade="all, delete-orphan")
 
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     
