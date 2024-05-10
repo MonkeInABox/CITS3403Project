@@ -1,0 +1,10 @@
+{% extends "heading.html" %}
+
+{% block content %}
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>ARE YOU SURE YOU WANT TO DELETE THIS USER: {{ user.username }}</p>
+    <p>IT IS PERMANENT AND WILL DELETE ALL ASSOCIATED COMMENTS AND POSTS</p>
+    {{ form.submit() }}
+</form>
+{% endblock %}

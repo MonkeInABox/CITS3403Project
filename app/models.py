@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
 
     posts: so.Mapped[list['Post']] = so.relationship('Post', back_populates='author', lazy="dynamic", cascade="all, delete-orphan")
     
-    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter")
+    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter", cascade="all, delete-orphan")
 
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     
@@ -84,6 +84,7 @@ class Post(db.Model):
         query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
         posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
         return posts
+    
     
 @login.user_loader
 def load_user(id):

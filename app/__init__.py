@@ -26,11 +26,14 @@ def create_app(config_class=Config):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
+    from app.posts import bp as post_bp
+    app.register_blueprint(post_bp)
+
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
-    from app.posts import bp as post_bp
-    app.register_blueprint(post_bp)
+    from app.comments import bp as comments_bp
+    app.register_blueprint(comments_bp)
 
     return app
 

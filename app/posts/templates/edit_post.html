@@ -1,0 +1,22 @@
+{% extends "heading.html" %}
+
+{% block content %}
+<div class="new_post_page">
+    <h1>Edit Post</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p> 
+            {{ form.category.label }}<br>
+            {{ form.category }}<br>
+        </p>
+        <p>
+            Input your post here!<br>
+            <div class="input_text">{{ form.body(size=100) }}</div><br>
+            {% for error in form.body.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "heading.html" %}
+
+{% block content %}
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <input type="hidden">
+    <p style="padding-left:10vw">
+        Edit Comment: <br>
+        {{ form.body(size=200) }} <br>
+        {% for error in form.body.errors %}
+        <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    </p>
+    <p class="comment_submit"> {{ form.submit() }}</p>
+</form>
+{% endblock %}
