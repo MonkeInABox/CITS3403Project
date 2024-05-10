@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, current_app
-from app.main.forms import EditProfileForm, PostNewComment, SearchForm, Delete
+from app.main.forms import EditProfileForm, SearchForm, Delete
+from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
 from app.models import User, Post, Comment
@@ -123,18 +124,8 @@ def search():
 
     return render_template('search.html', title='Search', form = form, search_term = search_term, posts = posts.items, next_url = next_url, prev_url = prev_url)
 
-@bp.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
-def delete_post(post_id):
-    form = Delete()
-    if form.validate_on_submit():
-        post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
-        db.session.delete(post)
-        db.session.commit()
-        flash('Post deleted', 'info')
-        return redirect(url_for('main.index'))
-    return render_template('delete_post.html', form=form)
-
 @bp.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def delete_user(user_id):
     form = Delete()
     user = db.first_or_404(sa.select(User).where(User.id == user_id))
@@ -144,14 +135,3 @@ def delete_user(user_id):
         flash('User deleted', 'info')
         return redirect(url_for('main.index'))
     return render_template('delete_user.html', form=form, user=user)
-
-@bp.route('/delete_comment/<int:comment_id>', methods=['GET', 'POST'])
-def delete_comment(comment_id):
-    form = Delete()
-    if form.validate_on_submit():
-        comment = db.first_or_404(sa.select(Comment).where(Comment.id == comment_id))
-        db.session.delete(comment)
-        db.session.commit()
-        flash('Comment deleted', 'info')
-        return redirect(url_for('main.index'))
-    return render_template('delete_comment.html', form=form)

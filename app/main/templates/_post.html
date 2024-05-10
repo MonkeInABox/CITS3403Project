@@ -12,7 +12,8 @@
             {{ post.body }}postid: {{ post.id }} postauthorid: {{ post.author.id }}
         </span>
             {% if current_user is none or current_user.id == post.author.id %}
-            <a href="{{ url_for('main.delete_post', post_id=post.id) }}">Delete Post</a>
+            <a href="{{ url_for('posts.delete_post', post_id=post.id) }}">Delete Post</a>
+            <a href="{{ url_for('posts.edit_post', post_id=post.id) }}">Edit Post</a>
             {% endif %}
     </div>
     <div>
