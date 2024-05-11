@@ -71,7 +71,7 @@ class Post(db.Model):
 
     comments: so.Mapped[list['Comment']] = so.relationship('Comment', back_populates='original_post', cascade="all, delete-orphan")
 
-    #likes: so.Mapped[list['Like']] = so.relationship('Like', back_populates='original_post', cascade="all, delete-orphan")
+    likes: so.Mapped[list['Like']] = so.relationship('Like', back_populates='original_post', cascade="all, delete-orphan")
 
     def __init__(self, body: str, user_id: int, category: str):
         self.body = body
@@ -110,14 +110,16 @@ class Comment(db.Model):
         self.author_id = author_id
         self.post_id = post_id
 
-#class Like(db.Model):
-#    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+class Like(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
-#    author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+    author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
-#    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
 
-#    original_post = db.relationship('Post', back_populates='likes')
+    post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
+
+    original_post = db.relationship('Post', back_populates='likes')
 
 
     

@@ -3,7 +3,7 @@ from app.posts.forms import PostNewPost
 from app.main.forms import SearchForm, Delete
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
-from app.models import Post, Comment
+from app.models import Post, Comment, Like
 from app.posts import bp
 from app import db
 import sqlalchemy as sa

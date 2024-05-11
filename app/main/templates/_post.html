@@ -16,6 +16,17 @@
             <a href="{{ url_for('posts.edit_post', post_id=post.id) }}">Edit Post</a>
             {% endif %}
     </div>
+    <p></p>
+    <div style = "margin-left: 10vw;">
+        {{ post.likes|length }}
+        {% if current_user.id in post.likes|map(attribute = "author_id")|list %}
+            {% set class_id = "fas fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% else %}
+            {% set class_id = "far fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% endif %}
+        <a href = "/like/{{ post.id }}"> <i class = "{{ class_id }}"></i> </a>
+    </div>
+    
     <div>
         <span style="margin-left: 10vw;" class="replies_heading">Replies:</span>
     </div>
