@@ -1,10 +1,4 @@
 <div style="display: flex; flex-direction: column; width: 100vw;">
-<<<<<<< Updated upstream
-    <div valign="top" style="width: 80vw;">
-        <span class="poster_name" style="display: inline-block;"><img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}"> {{ post.author.username }}</span>
-        <span style="display: inline-block;" class="post_body">{{ post.body }}<!--postid: {{ post.id }} postauthorid: {{ post.author.id }}--></span>
-    </div>
-=======
     <div valign="top" style="width: 80vw; margin-left: 2vw;">
         <a href="{{ url_for('main.profile', username=post.author.username) }}">
             <img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}">
@@ -39,7 +33,6 @@
         <a href = "/like/{{ post.id }}/dislike"> <i class = "{{ class_id }}"></i> </a>
     </div>
     
->>>>>>> Stashed changes
     <div>
         <span style="margin-left: 10vw;" class = "replies_heading">Replies:</span>
     </div>
