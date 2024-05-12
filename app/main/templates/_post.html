@@ -1,10 +1,11 @@
 <div style="display: flex; flex-direction: column; width: 100vw;">
-    <div valign="top" style="width: 80vw;">
+
+    <div valign="top" style="width: 80vw; margin-left: 2vw;">
         <a href="{{ url_for('main.profile', username=post.author.username) }}">
             <img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}">
         </a>
-        <span class="poster_name" style="display: inline-block;">
-            <a href="{{ url_for('main.profile', username=post.author.username) }}">
+        <span  style="display: inline-block;">
+            <a class="poster_name" href="{{ url_for('main.profile', username=post.author.username) }}">
                 {{ post.author.username }}
             </a>
         </span>
