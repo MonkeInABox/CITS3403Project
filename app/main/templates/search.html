@@ -1,0 +1,24 @@
+{% extends "heading.html" %}
+
+{% block content %}
+    <h2> Search results for: {{ search_term }}</h2>
+    {% for post in posts %}
+    <div class="posts">
+    <p class = "post">
+        {% include '_post.html' %}
+        </p>
+        {% for comment in post.comments %}
+            <p class="comment">
+                {% include '_comment.html' %}
+            </p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% if prev_url %}
+        <a href="{{ prev_url }}">Newer posts</a>
+    {% endif %}
+    {% if next_url %}
+        <a href="{{ next_url }}">Older posts</a>
+    {% endif %}
+    
+{% endblock %}

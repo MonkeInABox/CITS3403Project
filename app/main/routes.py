@@ -1,11 +1,18 @@
-from flask import render_template, flash, redirect, url_for, request, current_app
-from app.main.forms import EditProfileForm, PostNewComment
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
+from app.main.forms import EditProfileForm, SearchForm, Delete
+from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
-from app.models import User, Post, Comment
+from app.models import User, Post, Comment, Like, Dislike
 from datetime import datetime, timezone
 from app.main import bp
 from app import db
+
+#Pass stuff to navbar
+@bp.context_processor
+def heading():
+    form = SearchForm()
+    return dict(form=form)
 
 # What to do before calling anything else
 @bp.before_app_request
@@ -46,9 +53,9 @@ def index():
     else:
         prev_url = None
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form)
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user)
 
-# Main profile page
+# Main profile page 
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])
 @bp.route('/profile/<username>', methods=['GET'])
 def profile(username):
@@ -78,7 +85,7 @@ def profile(username):
     prev_url = url_for('main.profile', username=username, page=posts.prev_num) if posts.has_prev else None
 
     # Render the profile page with user information and posts
-    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url)
+    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url, username=username)
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -88,11 +95,69 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('profile', username=current_user.username))
+        return redirect(url_for('main.profile', username=current_user.username))
     elif request.method == 'GET':
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
+#Search Page
+@bp.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    if form.validate_on_submit():
+        search_term = form.searched.data
+    page = request.args.get('page', 1, type=int)
 
+    query = sa.select(Post).filter(Post.body.like('%' + search_term + '%')).order_by(Post.timestamp.desc())
+    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+
+    if posts.has_next:
+        next_url = url_for('main.search', page=posts.next_num)
+    else:
+        next_url = None
+
+    if posts.has_prev:
+        prev_url = url_for('main.search', page=posts.prev_num)
+    else:
+        prev_url = None
+
+    return render_template('search.html', title='Search', form = form, search_term = search_term, posts = posts.items, next_url = next_url, prev_url = prev_url)
+
+@bp.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def delete_user(user_id):
+    form = Delete()
+    user = db.first_or_404(sa.select(User).where(User.id == user_id))
+    if form.validate_on_submit():
+        db.session.delete(user)
+        db.session.commit()
+        flash('User deleted', 'info')
+        return redirect(url_for('main.index'))
+    return render_template('delete_user.html', form=form, user=user)
+
+@bp.route('/like/<post_id>/<like_type>', methods=['POST'])
+@login_required
+def like_post(post_id, like_type):
+    post = Post.query.filter_by(id = post_id).first()
+    like = Like.query.filter_by(author_id = current_user.id, post_id = post_id).first()
+    dislike = Dislike.query.filter_by(author_id = current_user.id, post_id = post_id).first()
     
+    if like:
+        db.session.delete(like)
+    elif like_type == "like":
+        like = Like(author_id = current_user.id, post_id = post_id)
+        db.session.add(like)
+    
+    if dislike:
+        db.session.delete(dislike)
+    elif like_type == "dislike":
+        dislike = Dislike(author_id = current_user.id, post_id = post_id)
+        db.session.add(dislike)
+    
+    db.session.commit()
+
+    like_count = len(post.likes) - len(post.dislikes)
+    return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
+
+

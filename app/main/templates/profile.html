@@ -8,6 +8,11 @@
                 <h1 style="padding-top: 5%;">{{ user.username }}</h1>
                 {% if user.about_me %}<p>About me:</p><p class="about_me">{{ user.about_me }}</p>{% endif %}
                 {% if user.last_seen %}<p class="last_seen">Last seen on: {{ user.last_seen }}</p>{% endif %}
+                {% if current_user.is_authenticated %}
+                    {% if username is none or username == current_user.username %}
+                    <a href="{{ url_for('main.delete_user', user_id=current_user.id) }}">Delete Profile</a>
+                    {% endif %}
+                {% endif %}
             </td>
         </tr>
             <tr style="text-align: left;">

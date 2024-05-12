@@ -1,4 +1,5 @@
 <div style="display: flex; flex-direction: column; width: 100vw;">
+
     <div valign="top" style="width: 80vw; margin-left: 2vw;">
         <a href="{{ url_for('main.profile', username=post.author.username) }}">
             <img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}">
@@ -19,21 +20,21 @@
     <p></p>
     <div style = "margin-left: 10vw;">
         {% if current_user.id in post.likes|map(attribute = "author_id")|list %}
-            {% set class_id = "fas fa-thumbs-up fa-lg fa-cog" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% set class_id = "fas fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% else %}
-            {% set class_id = "far fa-thumbs-up fa-lg fa-cog" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% set class_id = "far fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <a href = "/like/{{ post.id }}/like"> <i class = "{{ class_id }}" style = "transform: scaleX(-1);"></i> </a>
-        {{ post.likes|length - post.dislikes|length }}
+        <i class = "{{class_id}}" style = "transform: scaleX(-1);"  id = "like-button-{{post.id}}"onclick = "like({{post.id}})"></i>
+        <span id = "likes-count-{{post.id}}"> {{ post.likes|length - post.dislikes|length }} </span>
         {% if current_user.id in post.dislikes|map(attribute = "author_id")|list %}
-            {% set class_id = "fas fa-thumbs-down fa-lg fa-cog" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% set class_id = "fas fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% else %}
-            {% set class_id = "far fa-thumbs-down fa-lg fa-cog" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% set class_id = "far fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <a href = "/like/{{ post.id }}/dislike"> <i class = "{{ class_id }}"></i> </a>
+        <i class = "{{class_id}}"  id = "dislike-button-{{post.id}}"onclick = "dislike({{post.id}})"></i>
     </div>
     
     <div>
-        <span style="margin-left: 10vw;" class = "replies_heading">Replies:</span>
+        <span style="margin-left: 10vw;" class="replies_heading">Replies:</span>
     </div>
 </div>

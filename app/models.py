@@ -8,6 +8,7 @@ from flask_login import UserMixin
 from app import login
 from hashlib import md5
 from app import db
+from itsdangerous import URLSafeTimedSerializer
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -20,7 +21,7 @@ class User(UserMixin, db.Model):
 
     posts: so.Mapped[list['Post']] = so.relationship('Post', back_populates='author', lazy="dynamic", cascade="all, delete-orphan")
     
-    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter")
+    user_comments: so.Mapped['Comment'] = so.relationship(back_populates="commenter", cascade="all, delete-orphan")
 
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     
@@ -38,6 +39,20 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+    
+    def generate_password_reset_token(email):
+        # Generate a token that expires in 1 hour (3600 seconds)
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return serializer.dumps(email, salt='password-reset-salt')
+
+    def confirm_password_reset_token(token, max_age=3600):
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            # Load and validate the token
+            email = serializer.loads(token, salt='password-reset-salt', max_age=max_age)
+            return email
+        except Exception:
+            return None
         
     
 
@@ -56,6 +71,10 @@ class Post(db.Model):
 
     comments: so.Mapped[list['Comment']] = so.relationship('Comment', back_populates='original_post', cascade="all, delete-orphan")
 
+    likes: so.Mapped[list['Like']] = so.relationship('Like', back_populates='original_post', cascade="all, delete-orphan")
+
+    dislikes: so.Mapped[list['Dislike']] = so.relationship('Dislike', back_populates='original_post', cascade="all, delete-orphan")
+
     def __init__(self, body: str, user_id: int, category: str):
         self.body = body
         self.user_id = user_id
@@ -69,6 +88,7 @@ class Post(db.Model):
         query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
         posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
         return posts
+    
     
 @login.user_loader
 def load_user(id):
@@ -92,6 +112,30 @@ class Comment(db.Model):
         self.author_id = author_id
         self.post_id = post_id
 
+class Like(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+
+    post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
+
+    original_post = db.relationship('Post', back_populates='likes')
+
+class Dislike(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+
+    post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
+
+    original_post = db.relationship('Post', back_populates='dislikes')
+
+
+    
 
 
     
