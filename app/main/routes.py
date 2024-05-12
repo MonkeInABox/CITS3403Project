@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
 from app.main.forms import EditProfileForm, SearchForm, Delete
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
@@ -136,10 +136,10 @@ def delete_user(user_id):
         return redirect(url_for('main.index'))
     return render_template('delete_user.html', form=form, user=user)
 
-@bp.route('/like/<post_id>/<like_type>', methods=['GET'])
+@bp.route('/like/<post_id>/<like_type>', methods=['POST'])
 @login_required
 def like_post(post_id, like_type):
-    post = Post.query.filter_by(id = post_id)
+    post = Post.query.filter_by(id = post_id).first()
     like = Like.query.filter_by(author_id = current_user.id, post_id = post_id).first()
     dislike = Dislike.query.filter_by(author_id = current_user.id, post_id = post_id).first()
     
@@ -156,6 +156,8 @@ def like_post(post_id, like_type):
         db.session.add(dislike)
     
     db.session.commit()
-    return redirect(url_for('main.index'))
+
+    like_count = len(post.likes) - len(post.dislikes)
+    return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
 
 
