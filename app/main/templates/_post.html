@@ -18,13 +18,19 @@
     </div>
     <p></p>
     <div style = "margin-left: 10vw;">
-        {{ post.likes|length }}
         {% if current_user.id in post.likes|map(attribute = "author_id")|list %}
             {% set class_id = "fas fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% else %}
             {% set class_id = "far fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <a href = "/like/{{ post.id }}"> <i class = "{{ class_id }}"></i> </a>
+        <a href = "/like/{{ post.id }}/like"> <i class = "{{ class_id }}" style = "transform: scaleX(-1);"></i> </a>
+        {{ post.likes|length - post.dislikes|length }}
+        {% if current_user.id in post.dislikes|map(attribute = "author_id")|list %}
+            {% set class_id = "fas fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% else %}
+            {% set class_id = "far fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% endif %}
+        <a href = "/like/{{ post.id }}/dislike"> <i class = "{{ class_id }}"></i> </a>
     </div>
     
     <div>

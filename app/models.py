@@ -73,6 +73,8 @@ class Post(db.Model):
 
     likes: so.Mapped[list['Like']] = so.relationship('Like', back_populates='original_post', cascade="all, delete-orphan")
 
+    dislikes: so.Mapped[list['Dislike']] = so.relationship('Dislike', back_populates='original_post', cascade="all, delete-orphan")
+
     def __init__(self, body: str, user_id: int, category: str):
         self.body = body
         self.user_id = user_id
@@ -120,6 +122,17 @@ class Like(db.Model):
     post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
 
     original_post = db.relationship('Post', back_populates='likes')
+
+class Dislike(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+
+    author_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
+
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+
+    post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
+
+    original_post = db.relationship('Post', back_populates='dislikes')
 
 
     
