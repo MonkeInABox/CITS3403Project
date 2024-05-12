@@ -2,6 +2,7 @@ body {
     font-family: "IBM Plex Sans", sans-serif;
     margin-top: 0%;
     color: #152238;
+    background-color: #e5ebf8;
 }
 a {
     text-decoration: none;
@@ -31,6 +32,17 @@ a:hover {
 .search_bar:focus {
     background-color: white;
     color: #152238;
+}
+.search_button {
+    all: unset;
+    border-radius: 0.4em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: #152238 0.2;
+    border: solid #152238;
+}
+.search_button:hover {
+    box-shadow: 0 0 8px #152238;
 }
 h1 {
     text-align: center;
@@ -80,11 +92,12 @@ select {
 }
 .new_post_page {
     text-align: center;
+    width: 80vw;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
-    margin-right: 5vw;
+    margin-right: 25vw;
     margin-left: 5vw;
     width: auto;
 }
@@ -105,7 +118,7 @@ select {
     text-align: center;
 }
 div.sign_in {
-    margin: auto;
+    margin-left: 25vw;
     height: min-content;
     text-align: center;
     box-shadow: 0 0 8px rgba(76, 76, 141);
@@ -123,15 +136,14 @@ p.password_area {
 }
 table.profile_page {
     text-align: center;
-    width: 80vw;
-    max-width: 98%;
+    width: 50vw;
 }
 img.profile_pic {
     border-radius: 40px;
     box-shadow: 0 0 8px rgba(76, 76, 141);
 }
 .page_image {
-    margin-left: 50%; 
+    margin-left: 38vw; 
     width: 5vh; 
     padding-top: 3em;
     transition: 0.3s;
@@ -148,8 +160,9 @@ td.edit_profile > p {
     max-height: min-content;
     text-decoration: none;
     color: white;
-    padding: 10px;
+    margin-left: -20vw;
     margin-top: 30vh;
+    width: 60vw;
 }
 .poster_name {
     font-weight: bold;
@@ -178,6 +191,7 @@ td.edit_profile > p {
 }
 .edit_profile_page {
     text-align: center;
+    width: 80vw;
 }
 .post_body {
     border: rgba(76, 76, 141) solid 0.2em;
@@ -189,6 +203,9 @@ td.edit_profile > p {
     padding-left: 1em;
     padding-right: 2em;
 }
+.post_body:hover {
+    box-shadow: 0 0 8px rgba(76, 76, 141);
+}
 .comment {
     margin-left: 12vw;
     width: 60vw;
@@ -197,6 +214,10 @@ td.edit_profile > p {
     border-width: 3px;
     padding: 5vh;
     padding-top: 2vh;
+}
+.comment:hover {
+    box-shadow: 0 0 10px rgba(76, 76, 141);
+    border: solid rgba(76, 76, 141);
 }
 .commenter {
     margin-left: 10vw;

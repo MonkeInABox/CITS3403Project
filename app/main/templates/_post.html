@@ -12,9 +12,10 @@
         <span style="display: inline-block;" class="post_body">
             {{ post.body }}postid: {{ post.id }} postauthorid: {{ post.author.id }}
         </span>
+        <br>
             {% if current_user is none or current_user.id == post.author.id %}
-            <a href="{{ url_for('posts.delete_post', post_id=post.id) }}">Delete Post</a>
-            <a href="{{ url_for('posts.edit_post', post_id=post.id) }}">Edit Post</a>
+            <a class="delete_comment" href="{{ url_for('posts.delete_post', post_id=post.id) }}">Delete Post</a>
+            <a class = "edit_comment" href="{{ url_for('posts.edit_post', post_id=post.id) }}">Edit Post</a>
             {% endif %}
     </div>
     <p></p>
