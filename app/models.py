@@ -107,6 +107,10 @@ class Comment(db.Model):
     
     original_post = db.relationship('Post', back_populates='comments')
 
+    likes: so.Mapped[list['Like']] = so.relationship('Like', back_populates='original_comment', cascade="all, delete-orphan")
+
+    dislikes: so.Mapped[list['Dislike']] = so.relationship('Dislike', back_populates='original_comment', cascade="all, delete-orphan")
+
     def __init__(self, body: str, author_id: int, post_id: int):
         self.body = body
         self.author_id = author_id
@@ -123,6 +127,11 @@ class Like(db.Model):
 
     original_post = db.relationship('Post', back_populates='likes')
 
+    comment_id = so.mapped_column(sa.ForeignKey('comment.id'), index=True)
+
+    original_comment = db.relationship('Comment', back_populates='likes')
+
+
 class Dislike(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -133,6 +142,10 @@ class Dislike(db.Model):
     post_id = so.mapped_column(sa.ForeignKey('post.id'), index=True)
 
     original_post = db.relationship('Post', back_populates='dislikes')
+
+    comment_id = so.mapped_column(sa.ForeignKey('comment.id'), index=True)
+
+    original_comment = db.relationship('Comment', back_populates='dislikes')
 
 
     

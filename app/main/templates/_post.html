@@ -24,14 +24,14 @@
         {% else %}
             {% set class_id = "far fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <i class = "{{class_id}}" style = "transform: scaleX(-1);"  id = "like-button-{{post.id}}"onclick = "like({{post.id}})"></i>
-        <span id = "likes-count-{{post.id}}"> {{ post.likes|length - post.dislikes|length }} </span>
+        <i class = "{{class_id}}" style = "transform: scaleX(-1);"  id = "like-button-post-{{post.id}}"onclick = "like({{post.id}}, 'post')"></i>
+        <span id = "likes-count-post-{{post.id}}"> {{ post.likes|length - post.dislikes|length }} </span>
         {% if current_user.id in post.dislikes|map(attribute = "author_id")|list %}
             {% set class_id = "fas fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% else %}
             {% set class_id = "far fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <i class = "{{class_id}}"  id = "dislike-button-{{post.id}}"onclick = "dislike({{post.id}})"></i>
+        <i class = "{{class_id}}"  id = "dislike-button-post-{{post.id}}"onclick = "dislike({{post.id}}, 'post' )"></i>
     </div>
     
     <div>

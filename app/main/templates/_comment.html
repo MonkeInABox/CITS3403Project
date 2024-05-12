@@ -2,6 +2,21 @@
     <tr valign="top">
         <p class = "commenter" style="size: 4px">{{ comment.commenter.username }} commented: </p>
         <p class = "comment" style="size: 4px">{{ comment.body }} </p>
+        <div style = "margin-left: 12vw;">
+            {% if current_user.id in comment.likes|map(attribute = "author_id")|list %}
+                {% set class_id = "fas fa-thumbs-up fa-lg" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% else %}
+                {% set class_id = "far fa-thumbs-up fa-lg" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% endif %}
+            <i class = "{{class_id}}" style = "transform: scaleX(-1);"  id = "like-button-comment-{{comment.id}}"onclick = "like({{comment.id}}, 'comment')"></i>
+            <span id = "likes-count-comment-{{comment.id}}"> {{ comment.likes|length - comment.dislikes|length }} </span>
+            {% if current_user.id in comment.dislikes|map(attribute = "author_id")|list %}
+                {% set class_id = "fas fa-thumbs-down fa-lg" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% else %}
+                {% set class_id = "far fa-thumbs-down fa-lg" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+            {% endif %}
+            <i class = "{{class_id}}"  id = "dislike-button-comment-{{comment.id}}"onclick = "dislike({{comment.id}}, 'comment')"></i>
+        </div>
         {% if current_user is none or current_user.id == comment.commenter.id %}
             <a class="delete_comment" href="{{ url_for('comments.delete_comment', comment_id=comment.id) }}">Delete Comment</a>
             <a class="edit_comment" href="{{ url_for('comments.edit_comment', comment_id=comment.id) }}">Edit Comment</a>
