@@ -1,9 +1,15 @@
-function like(postId){
-    const likeCount = document.getElementById(`likes-count-${postId}`);
-    const likeButton = document.getElementById(`like-button-${postId}`)
-    const dislikeButton = document.getElementById(`dislike-button-${postId}`)
+function like(postId, medium){
+    if (medium == "post"){
+        var likeCount = document.getElementById(`likes-count-post-${postId}`);
+        var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
+        var likeButton = document.getElementById(`like-button-post-${postId}`);
+    } else{
+        var likeCount = document.getElementById(`likes-count-comment-${postId}`);
+        var dislikeButton = document.getElementById(`dislike-button-comment-${postId}`);
+        var likeButton = document.getElementById(`like-button-comment-${postId}`);
+    }
 
-    fetch(`/like/${postId}/like`, {method: "POST"})
+    fetch(`/like/${postId}/like/${medium}`, {method: "POST"})
         .then((res) => res.json())
         .then((data) => {
             likeCount.innerHTML = data["likes"];
@@ -20,12 +26,18 @@ function like(postId){
         })
 }
 
-function dislike(postId){
-    const likeCount = document.getElementById(`likes-count-${postId}`);
-    const dislikeButton = document.getElementById(`dislike-button-${postId}`)
-    const likeButton = document.getElementById(`like-button-${postId}`)
-
-    fetch(`/like/${postId}/dislike`, {method: "POST"})
+function dislike(postId, medium){
+    if (medium == "post"){
+        var likeCount = document.getElementById(`likes-count-post-${postId}`);
+        var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
+        var likeButton = document.getElementById(`like-button-post-${postId}`);
+    } else{
+        var likeCount = document.getElementById(`likes-count-comment-${postId}`);
+        var dislikeButton = document.getElementById(`dislike-button-comment-${postId}`);
+        var likeButton = document.getElementById(`like-button-comment-${postId}`);
+    }
+        
+    fetch(`/like/${postId}/dislike/${medium}`, {method: "POST"})
     .then((res) => res.json())
     .then((data) => {
         likeCount.innerHTML = data["likes"];
@@ -39,7 +51,5 @@ function dislike(postId){
         } else(
             likeButton.className = "far fa-thumbs-up fa-2x"
         )
-
-
     })
 }

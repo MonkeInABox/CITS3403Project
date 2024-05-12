@@ -136,28 +136,41 @@ def delete_user(user_id):
         return redirect(url_for('main.index'))
     return render_template('delete_user.html', form=form, user=user)
 
-@bp.route('/like/<post_id>/<like_type>', methods=['POST'])
+@bp.route('/like/<post_id>/<like_type>/<medium>', methods=['POST'])
 @login_required
-def like_post(post_id, like_type):
-    post = Post.query.filter_by(id = post_id).first()
-    like = Like.query.filter_by(author_id = current_user.id, post_id = post_id).first()
-    dislike = Dislike.query.filter_by(author_id = current_user.id, post_id = post_id).first()
+def like_or_dislike(post_id, like_type, medium):
+    if medium == "post":
+        post = Post.query.filter_by(id = post_id).first()
+        like = Like.query.filter_by(author_id = current_user.id, post_id = post_id).first()
+        dislike = Dislike.query.filter_by(author_id = current_user.id, post_id = post_id).first()
+    else:
+        comment = Comment.query.filter_by(id = post_id).first()
+        like = Like.query.filter_by(author_id = current_user.id, comment_id = post_id).first()
+        dislike = Dislike.query.filter_by(author_id = current_user.id, comment_id = post_id).first()
     
     if like:
         db.session.delete(like)
-    elif like_type == "like":
+    elif like_type == "like" and medium == "post":
         like = Like(author_id = current_user.id, post_id = post_id)
+        db.session.add(like)
+    elif like_type == "like" and medium == "comment":
+        like = Like(author_id = current_user.id, comment_id = post_id)
         db.session.add(like)
     
     if dislike:
         db.session.delete(dislike)
-    elif like_type == "dislike":
+    elif like_type == "dislike" and medium == "post":
         dislike = Dislike(author_id = current_user.id, post_id = post_id)
+        db.session.add(dislike)
+    elif like_type == "dislike" and medium == "comment":
+        dislike = Dislike(author_id = current_user.id, comment_id = post_id)
         db.session.add(dislike)
     
     db.session.commit()
 
-    like_count = len(post.likes) - len(post.dislikes)
-    return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
-
-
+    
+    if medium == "post":
+        like_count = len(post.likes) - len(post.dislikes)
+        return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
+    like_count = len(comment.likes) - len(comment.dislikes)
+    return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, comment.likes), "disliked": current_user.id in map(lambda x: x.author_id, comment.dislikes)})
