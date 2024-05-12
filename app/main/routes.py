@@ -3,7 +3,7 @@ from app.main.forms import EditProfileForm, SearchForm, Delete
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
-from app.models import User, Post, Comment, Like
+from app.models import User, Post, Comment, Like, Dislike
 from datetime import datetime, timezone
 from app.main import bp
 from app import db
@@ -136,17 +136,25 @@ def delete_user(user_id):
         return redirect(url_for('main.index'))
     return render_template('delete_user.html', form=form, user=user)
 
-@bp.route('/like/<post_id>', methods=['GET'])
+@bp.route('/like/<post_id>/<like_type>', methods=['GET'])
 @login_required
-def like_post(post_id):
+def like_post(post_id, like_type):
     post = Post.query.filter_by(id = post_id)
     like = Like.query.filter_by(author_id = current_user.id, post_id = post_id).first()
-
+    dislike = Dislike.query.filter_by(author_id = current_user.id, post_id = post_id).first()
+    
     if like:
         db.session.delete(like)
-    else:
+    elif like_type == "like":
         like = Like(author_id = current_user.id, post_id = post_id)
         db.session.add(like)
+    
+    if dislike:
+        db.session.delete(dislike)
+    elif like_type == "dislike":
+        dislike = Dislike(author_id = current_user.id, post_id = post_id)
+        db.session.add(dislike)
+    
     db.session.commit()
     return redirect(url_for('main.index'))
 
