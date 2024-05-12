@@ -2,5 +2,12 @@
     <tr valign="top">
         <p class = "commenter" style="size: 4px">{{ comment.commenter.username }} commented: </p>
         <p class = "comment" style="size: 4px">{{ comment.body }} </p>
+<<<<<<< Updated upstream
+=======
+        {% if current_user is none or current_user.id == comment.commenter.id %}
+            <a class="delete_comment" href="{{ url_for('comments.delete_comment', comment_id=comment.id) }}">Delete Comment</a>
+            <a class="edit_comment" href="{{ url_for('comments.edit_comment', comment_id=comment.id) }}">Edit Comment</a>
+        {% endif %}
+>>>>>>> Stashed changes
     </tr>
 </table>

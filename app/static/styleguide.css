@@ -1,6 +1,36 @@
-body:not(.navbar-custom) {
+body {
     font-family: "IBM Plex Sans", sans-serif;
     margin-top: 0%;
+    color: #152238;
+}
+a {
+    text-decoration: none;
+    color: #152238;
+}
+a:hover {
+    text-decoration: underline;
+}
+.fa-cog {
+    color:rgba(76, 76, 141, 0.544);
+}
+.fa-cog:hover {
+    text-decoration: none;
+    color: rgba(76, 76, 141);
+}
+.nav-log {
+    padding-left: 57vw !important;
+}
+.search_bar {
+    all:unset;
+    width: 7.5vw;
+    border: none;
+    background-color: rgba(170, 170, 199);
+    color:#152238;
+    padding-left: 0.5em;
+}
+.search_bar:focus {
+    background-color: white;
+    color: #152238;
 }
 h1 {
     text-align: center;
@@ -9,9 +39,8 @@ h1 {
     background-color: red;
 }
 .page_body {
-    margin-left: 2%;
-    margin-top: 0%;
-    max-width: 98%;
+    width: 100vw;
+    padding-bottom: 5vh;
 }
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
@@ -61,6 +90,16 @@ select {
 }
 .comment_submit {
     margin-left: 10vw;
+}
+.delete_comment {
+    background-color: #152238 0.544;
+    border-radius: 5px;
+    margin-left: 10vw;
+}
+.edit_comment {
+    background-color: #152238 0.544;
+    border-radius: 5px;
+    margin-left: 5vw;
 }
 .greeting {
     text-align: center;
@@ -114,15 +153,19 @@ td.edit_profile > p {
 }
 .poster_name {
     font-weight: bold;
+    text-decoration: none;
     size: 5vh;
     background-color: rgba(76, 76, 141, 0.544);
-    color: #152238;
+    color: #152238 !important;
     margin-top: 2vh;
     margin-left: 0;
     max-width: fit-content;
     padding: 0.7em;
     padding-right: 1.3em;
     border-radius: 10px 0 0 10px;
+}
+.poster_name:hover {
+    text-decoration: underline solid;
 }
 .about_me {
     box-shadow: 0 0 8px rgba(76, 76, 141);

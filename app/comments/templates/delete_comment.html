@@ -1,0 +1,10 @@
+{% extends "heading.html" %}
+
+{% block content %}
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>ARE YOU SURE YOU WANT TO DELETE THIS COMMENT?</p>
+    <p>IT IS PERMANENT!</p>
+    {{ form.submit() }}
+</form>
+{% endblock %}
