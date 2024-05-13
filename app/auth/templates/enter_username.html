@@ -1,6 +1,20 @@
-<form method="POST">
-    {{ form.hidden_tag() }}
-    {{ form.username.label }}
-    {{ form.username(size=20) }}
-    {{ form.submit() }}
-</form>
+{% extends "heading.html" %}
+
+{% block content %}
+<div class="sign_in">
+    <h1 class = "sign_in"> Enter Username</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p class="username_area">
+            {{ form.username.label }}<br>
+            {{ form.username(size=20, class="input") }}
+            {% for error in form.username.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p class="sign_in_button">
+            {{ form.submit(class="btn") }}
+        </p>
+    </form>
+</div>
+{% endblock %}
