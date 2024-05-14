@@ -26,6 +26,8 @@ def before_request():
 def index():
     '''Main landing page'''
     comment_form = PostNewComment()
+    filter_form = FilterForm()
+    query = 0
 
     if comment_form.validate_on_submit() and current_user.is_authenticated:
         # Create a new comment and associate it with the correct post
@@ -38,9 +40,23 @@ def index():
             db.session.add(new_comment)
             db.session.commit()
 
+    if filter_form.validate_on_submit:
+        # create a new filter
+        if filter_form.filter.data == "nwst":
+            query = sa.select(Post).order_by(Post.timestamp.desc())
+        elif filter_form.filter.data == "ldst":
+            query = sa.select(Post).order_by(Post.timestamp.asc())
+        elif filter_form.filter.data == "mslk":
+            query = sa.select(Post).order_by((len(Post.likes) - len(Post.dislikes)).desc())
+        elif filter_form.filter.data == "lslk":
+            query = sa.select(Post).order_by((len(Post.likes) - len(Post.dislikes)).asc())
+        elif filter_form.filter.data == "mscm":
+            query = sa.select(Post).order_by((len(Post.comments).desc()))  
+    else:
+        query = sa.select(Post).order_by(Post.timestamp.desc())                       
+
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
-    query = sa.select(Post).order_by(Post.timestamp.desc())
     posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
 
     if posts.has_next:
@@ -53,7 +69,7 @@ def index():
     else:
         prev_url = None
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user)
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user, filter_form = filter_form)
 
 # Main profile page 
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])

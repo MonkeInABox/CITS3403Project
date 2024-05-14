@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app.posts.forms import PostNewPost
-from app.main.forms import SearchForm, Delete
+from app.main.forms import SearchForm, Delete, FilterForm
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
 from app.models import Post, Comment
@@ -48,6 +48,7 @@ def categories(category):
         return url_for('main.index')
     
     comment_form = PostNewComment()
+    filter_form = FilterForm()
 
     if comment_form.validate_on_submit() and current_user.is_authenticated:
         # Create a new comment and associate it with the correct post
@@ -71,7 +72,7 @@ def categories(category):
     else:
         prev_url = None
 
-    return render_template('index.html', title=category, posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form)
+    return render_template('index.html', title=category, posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, FilterForm = filter_form)
 
 @bp.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
 @login_required
