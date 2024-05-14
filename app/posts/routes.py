@@ -72,7 +72,7 @@ def categories(category):
     else:
         prev_url = None
 
-    return render_template('index.html', title=category, posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, FilterForm = filter_form)
+    return render_template('index.html', title=category, posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, filter_form = filter_form)
 
 @bp.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
 @login_required
