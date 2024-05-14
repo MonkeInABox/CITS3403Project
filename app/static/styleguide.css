@@ -74,6 +74,23 @@ h1 {
     overflow-y: auto; 
     text-align: center;
 }
+
+.toggle-btn {
+    width: auto;
+    height: auto;
+    right: 80px;
+    top: 18px;
+    color:  #152238 !important;
+    background-color: transparent !important;
+    border: none;
+    
+}
+
+.toggle-btn .bi {
+    font-size:25px; 
+    font-weight: bold; 
+}
+
 .navbar-
 form textarea#post {
     width: 60vw;
