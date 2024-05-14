@@ -3,10 +3,18 @@ function like(postId, medium){
         var likeCount = document.getElementById(`likes-count-post-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
         var likeButton = document.getElementById(`like-button-post-${postId}`);
+        var liked_class_name = "fas fa-thumbs-up fa-2x"
+        var not_liked_class_name = "far fa-thumbs-up fa-2x"
+        var disliked_class_name = "fas fa-thumbs-down fa-2x"
+        var not_disliked_class_name = "far fa-thumbs-down fa-2x"
     } else{
         var likeCount = document.getElementById(`likes-count-comment-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-comment-${postId}`);
         var likeButton = document.getElementById(`like-button-comment-${postId}`);
+        var liked_class_name = "fas fa-thumbs-up fa-lg"
+        var not_liked_class_name = "far fa-thumbs-up fa-lg"
+        var disliked_class_name = "fas fa-thumbs-down fa-lg"
+        var not_disliked_class_name = "far fa-thumbs-down fa-lg"
     }
 
     fetch(`/like/${postId}/like/${medium}`, {method: "POST"})
@@ -14,14 +22,14 @@ function like(postId, medium){
         .then((data) => {
             likeCount.innerHTML = data["likes"];
             if(data["liked"]  === true){
-                likeButton.className = "fas fa-thumbs-up fa-2x"
+                likeButton.className = liked_class_name
             } else(
-                likeButton.className = "far fa-thumbs-up fa-2x"
+                likeButton.className = not_liked_class_name
             )
             if(data["disliked"]  === true){
-                dislikeButton.className = "fas fa-thumbs-down fa-2x"
+                dislikeButton.className = disliked_class_name
             } else(
-                dislikeButton.className = "far fa-thumbs-down fa-2x"
+                dislikeButton.className = not_disliked_class_name
             )
         })
 }
@@ -31,10 +39,18 @@ function dislike(postId, medium){
         var likeCount = document.getElementById(`likes-count-post-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
         var likeButton = document.getElementById(`like-button-post-${postId}`);
+        var liked_class_name = "fas fa-thumbs-up fa-2x"
+        var not_liked_class_name = "far fa-thumbs-up fa-2x"
+        var disliked_class_name = "fas fa-thumbs-down fa-2x"
+        var not_disliked_class_name = "far fa-thumbs-down fa-2x"
     } else{
         var likeCount = document.getElementById(`likes-count-comment-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-comment-${postId}`);
         var likeButton = document.getElementById(`like-button-comment-${postId}`);
+        var liked_class_name = "fas fa-thumbs-up fa-lg"
+        var not_liked_class_name = "far fa-thumbs-up fa-lg"
+        var disliked_class_name = "fas fa-thumbs-down fa-lg"
+        var not_disliked_class_name = "far fa-thumbs-down fa-lg"
     }
         
     fetch(`/like/${postId}/dislike/${medium}`, {method: "POST"})
@@ -42,14 +58,14 @@ function dislike(postId, medium){
     .then((data) => {
         likeCount.innerHTML = data["likes"];
         if(data["disliked"]  === true){
-            dislikeButton.className = "fas fa-thumbs-down fa-2x"
+            dislikeButton.className = disliked_class_name
         } else(
-            dislikeButton.className = "far fa-thumbs-down fa-2x"
+            dislikeButton.className = not_disliked_class_name
         )
         if(data["liked"]  === true){
-            likeButton.className = "fas fa-thumbs-up fa-2x"
+            likeButton.className = liked_class_name
         } else(
-            likeButton.className = "far fa-thumbs-up fa-2x"
+            likeButton.className = not_liked_class_name
         )
     })
 }
