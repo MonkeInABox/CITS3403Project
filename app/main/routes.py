@@ -47,11 +47,11 @@ def index():
         elif filter_form.filter.data == "ldst":
             query = sa.select(Post).order_by(Post.timestamp.asc())
         elif filter_form.filter.data == "mslk":
-            query = sa.select(Post).order_by((len(Post.likes) - len(Post.dislikes)).desc())
-        elif filter_form.filter.data == "lslk":
-            query = sa.select(Post).order_by((len(Post.likes) - len(Post.dislikes)).asc())
+            query = sa.select(Post).join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc())
+        elif filter_form.filter.data == "msdk":
+            query = sa.select(Post).join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
         elif filter_form.filter.data == "mscm":
-            query = sa.select(Post).order_by((len(Post.comments).desc()))  
+            query = sa.select(Post).join(Post.comments).group_by(Post.id).order_by(db.func.count(Post.comments).desc())
     else:
         query = sa.select(Post).order_by(Post.timestamp.desc())                       
 

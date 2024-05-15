@@ -19,7 +19,7 @@ class FilterForm(FlaskForm):
                                ('nwst', 'Newest'),   # DO NOT GO ABOVE 4 CHARS FOR DATABASE VALUE
                                ('ldst', 'Oldest'),  # DATABASE CAN ONLY HANDLE 4 CHARS!!!
                                ('mslk', 'Most Liked'),
-                               ('lslk', 'Least Liked'),
+                               ('msdk', 'Most disliked'),
                                ('mscm', 'Most Commented')
                            ],
                            default = 'nwst')
