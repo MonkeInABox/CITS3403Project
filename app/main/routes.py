@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, render_template_string
 from app.main.forms import EditProfileForm, SearchForm, Delete, FilterForm
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
@@ -190,3 +190,23 @@ def like_or_dislike(post_id, like_type, medium):
         return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
     like_count = len(comment.likes) - len(comment.dislikes)
     return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, comment.likes), "disliked": current_user.id in map(lambda x: x.author_id, comment.dislikes)})
+
+# Define a route to fetch comments for a specific post
+@bp.route('/get_comments/<int:post_id>')
+def get_comments(post_id):
+    # Retrieve comments for the specified post (Replace this with your logic)
+    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+    comments = post.comments
+    # Assuming comments are in HTML format, you can return them directly
+    html_content = render_template_string(
+        '''
+        {% for comment in comments %}
+            <p>
+                {% include '_comment.html' %}
+            </p>
+        {% endfor %}
+        ''',
+        comments=comments
+    )
+    print(html_content)
+    return html_content

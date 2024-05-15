@@ -69,3 +69,18 @@ function dislike(postId, medium){
         )
     })
 }
+
+function toggleComments(postId) {
+    var xhr = new XMLHttpRequest();
+    var url = '/get_comments/' + postId;
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var commentsContainer = document.getElementById(`toggle-comments-${postId}`);
+            //commentsContainer.innerHTML = xhr.responseText;
+            commentsContainer.style.display = 'block';
+        }
+    };
+    xhr.send();
+}

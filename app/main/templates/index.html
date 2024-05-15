@@ -19,12 +19,8 @@
                 {% include 'new_comment.html' %}
             </p>
         {% endif %}
-        {% for comment in post.comments %}
-            <p>
-                {% include '_comment.html' %}
-            </p>
-        {% endfor %}
-    
+        <div id="toggle-comments-{post.id}" style="display: none;">
+        </div>
     {% endfor %}
     {% if prev_url %}
         <a style="padding-left: 2vw;" href="{{ prev_url }}">Newer posts</a>
