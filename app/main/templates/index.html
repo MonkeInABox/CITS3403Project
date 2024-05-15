@@ -19,7 +19,12 @@
                 {% include 'new_comment.html' %}
             </p>
         {% endif %}
-        <div id="toggle-comments-{post.id}" style="display: none;">
+        <div id="toggle-comments-field-{{post.id}}" style="display: none;">
+            {% for comment in post.comments %}
+                <p>
+                    {% include '_comment.html' %}
+                </p>
+            {% endfor %}
         </div>
     {% endfor %}
     {% if prev_url %}

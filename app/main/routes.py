@@ -198,14 +198,13 @@ def get_comments(post_id):
     post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
     comments = post.comments
     # Assuming comments are in HTML format, you can return them directly
-    html_content = render_template_string(
-        '''
+    html_content = render_template_string("""
         {% for comment in comments %}
-            <p>
-                {% include '_comment.html' %}
-            </p>
+        <p>
+        {% include '_comment.html' %}
+        </p>
         {% endfor %}
-        ''',
+        """,
         comments=comments
     )
     print(html_content)

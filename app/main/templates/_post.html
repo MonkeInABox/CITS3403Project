@@ -33,7 +33,7 @@
             {% set class_id = "far fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
         <i class = "{{class_id}}"  id = "dislike-button-post-{{post.id}}"onclick = "dislike({{post.id}}, 'post' )"></i>
-        <i class = "fa-regular fa-comments fa-2x" style = "transform: scaleX(-1);"  id = "toggle-comments-{{post.id}}"onclick = "toggleComments({{post.id}})"></i>
+        <i class = "fa-regular fa-comments fa-2x"   id = "toggle-comments-button-{{post.id}}"onclick = "toggleComments({{post.id}})"></i>
     </div>
     
     <div>

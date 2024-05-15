@@ -71,16 +71,23 @@ function dislike(postId, medium){
 }
 
 function toggleComments(postId) {
-    var xhr = new XMLHttpRequest();
-    var url = '/get_comments/' + postId;
-    xhr.open('GET', url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var commentsContainer = document.getElementById(`toggle-comments-${postId}`);
-            //commentsContainer.innerHTML = xhr.responseText;
-            commentsContainer.style.display = 'block';
-        }
-    };
-    xhr.send();
+    var commentsContainer = document.getElementById(`toggle-comments-field-${postId}`);
+    
+    // If the comments are currently hidden, send a request to fetch them
+    if (commentsContainer.style.display === 'none') {
+        var xhr = new XMLHttpRequest();
+        var url = '/get_comments/' + postId;
+        xhr.open('GET', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                commentsContainer.innerHTML = xhr.responseText;
+                commentsContainer.style.display = '';
+            }
+        };
+        xhr.send();
+    } else {
+        // If the comments are visible, hide them
+        commentsContainer.style.display = 'none';
+    }
 }
