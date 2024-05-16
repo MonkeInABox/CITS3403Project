@@ -192,19 +192,21 @@ function handleNewCommentInput(postId) {
             setTimeout(() => {
                 document.getElementById('flash-message').style.display = 'none';
             }, 3000);
+            // Update comment button visibility
+            const button = document.getElementById(`toggle-comments-button-${postId}`);
+            console.log(button)
+            button.style.display = ''; // Show button
         }
         else if (response.status === 400) {
             // Form validation errors received
             response.json().then(data => {
                 const errors = data.errors;
                 const errorMessage = Object.values(errors).join(', '); // Concatenate error messages
-                
                 // Display the error message in the designated <span> element
                 const errorSpan = document.getElementById(`json-error-${postId}`);
                 const showError = document.getElementById(`comment-error-${postId}`);
                 errorSpan.textContent = errorMessage;
                 showError.style.display='';
-                
             });
         }
         else {
@@ -215,6 +217,7 @@ function handleNewCommentInput(postId) {
         console.error('Error submitting comment:', error);
     });
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
