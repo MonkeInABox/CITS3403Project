@@ -218,9 +218,46 @@ function handleNewCommentInput(postId) {
     });
 }
 
+function pollForUpdates() {
+    console.log('test');
+    setInterval(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        var page = urlParams.get('page');
+        var filter = urlParams.get('filter')
+        fetch(`/check_updates?page=${page}&filter=${filter}`) // Replace '/check_updates' with the appropriate route to check for updates
+            .then(response => {
+                if (response.ok) {
+                    console.log(response);
+                    return response.json();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log(data)
+                // Update comment button visibility for each post
+                data.forEach(postId => {
+                    console.log(postId)
+                    var button = document.getElementById(`toggle-comments-button-${postId}`);
+                    if (postId > 0) {
+                        console.log("has comments");
+                        button.style.display = ''; // Show button
+                    } else {
+                        postId = Math.abs(postId)
+                        button = document.getElementById(`toggle-comments-button-${postId}`)
+                        button.style.display = 'none'; // Hide button
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error checking for updates:', error);
+            });
+    }, 10000); // Poll every 10 seconds (10000 milliseconds)
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
     handleSubmitButtons();
     removeErrorMessages();
+    pollForUpdates();
 });

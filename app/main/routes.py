@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, render_template_string
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, render_template_string, make_response
 from app.main.forms import EditProfileForm, SearchForm, Delete, FilterForm
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
@@ -28,6 +28,7 @@ def index():
     comment_form = PostNewComment()
     filter_form = FilterForm()
     query = 0
+    filter_value = 0
 
     if comment_form.validate_on_submit() and current_user.is_authenticated:
         # Create a new comment and associate it with the correct post
@@ -42,28 +43,44 @@ def index():
         return jsonify(errors=comment_form.errors), 400  # Return 400 if post not found
 
     filter_data = request.args.get('filter')
+    responses = make_response("test")
+    responses.set_cookie('test', "test")
+    # If argument exists
     if filter_data:
+        # Set cookie if filter_data exists
+        response = make_response("Filter data set!")
+        response.set_cookie('filter', filter_data)
+        filter_value = filter_data
         query = build_query(filter_data)
     else:
-        query = sa.select(Post).order_by(Post.timestamp.desc())
-
-    print(type(query))     
+        # If cookie exists
+        filter_value = request.cookies.get('filter')
+        if filter_value:
+            query = build_query(filter_value)
+        else:
+            query = sa.select(Post).order_by(Post.timestamp.desc())
+            filter_value = 'nwst'   
 
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
-    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+
+    # Re-add filter argument if it exists
+    if 'filter' in request.args:
+        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+    else:
+        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
 
     if posts.has_next:
-        next_url = url_for('main.index', page=posts.next_num)
+        next_url = url_for('main.index', page=posts.next_num, filter=request.args.get('filter'))
     else:
         next_url = None
 
     if posts.has_prev:
-        prev_url = url_for('main.index', page=posts.prev_num)
+        prev_url = url_for('main.index', page=posts.prev_num, filter=request.args.get('filter'))
     else:
         prev_url = None
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user, filter_form = filter_form)
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user, filter_form = filter_form, filter_value=filter_value)
     
 @bp.route('/filter', methods=['POST'])
 def filter_posts():
@@ -225,7 +242,6 @@ def get_comments(post_id):
         """,
         comments=comments
     )
-    print(html_content)
     return html_content
 
 @bp.route('/submit_comment/<int:post_id>', methods=['POST'])

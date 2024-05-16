@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
 from app.posts.forms import PostNewPost
 from app.main.forms import SearchForm, Delete, FilterForm
 from app.comments.forms import PostNewComment
@@ -121,3 +121,16 @@ def delete_post(post_id):
         flash('Post deleted', 'info')
         return redirect(url_for('main.index'))
     return render_template('delete_post.html', form=form)
+
+@bp.route('/check_updates')
+def check_updates():
+    page = request.args.get('page', 1, type=int)
+    filter_data = request.args.get('filter')
+    print(f"filter {filter_data}")
+    print(f"page here is {page}")
+    posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data)
+    
+    # Convert the result to a list of dictionaries
+    print(posts_with_comment_status)
+    
+    return posts_with_comment_status
