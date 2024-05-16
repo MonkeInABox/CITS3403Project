@@ -89,6 +89,21 @@ class Post(db.Model):
         posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
         return posts
     
+    def get_posts_by_cat_filter(category, filter):
+        page = request.args.get('page', 1, type=int)
+        if filter == "nwst":
+            query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
+        elif filter == "ldst":
+            query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.asc())
+        elif filter == "mslk":
+            query = sa.select(Post).filter_by(category=category).join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc())
+        elif filter == "msdk":
+            query = sa.select(Post).filter_by(category=category).join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
+        elif filter == "mscm":
+            query = sa.select(Post).filter_by(category=category).join(Post.comments).group_by(Post.id).order_by(db.func.count(Post.comments).desc())
+        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+        return posts
+    
     
 @login.user_loader
 def load_user(id):

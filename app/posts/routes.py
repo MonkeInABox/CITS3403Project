@@ -62,18 +62,8 @@ def categories(category):
             db.session.commit()
     
     if filter_form.validate_on_submit():
-        if filter_form.filter.data == "nwst":
-            query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
-        elif filter_form.filter.data == "ldst":
-            query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.asc())
-        elif filter_form.filter.data == "mslk":
-            query = sa.select(Post).join(Post.likes).group_by(Post.id).filter_by(category=category).order_by(db.func.count(Post.likes).desc())
-        elif filter_form.filter.data == "msdk":
-            query = sa.select(Post).join(Post.dislikes).group_by(Post.id).filter_by(category=category).order_by(db.func.count(Post.dislikes).desc())
-        elif filter_form.filter.data == "mscm":
-            query = sa.select(Post).join(Post.comments).group_by(Post.id).filter_by(category=category).order_by(db.func.count(Post.comments).desc())
-        page = request.args.get('page', 1, type=int)
-        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+        filter = filter_form.filter.data
+        posts = Post.get_posts_by_cat_filter(categories[category], filter)
     else:
         posts = Post.get_posts_by_cat(categories[category])
 
