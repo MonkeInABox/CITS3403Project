@@ -84,6 +84,10 @@ function buttonHandling() {
                 button.classList.remove("fa-regular");
                 button.classList.add("fa-solid");
             }
+            else if (isClicked) {
+                button.classList.remove("fa-solid");
+                button.classList.add("fa-regular")
+            }
         });
 
         button.addEventListener('mouseout', function() {
