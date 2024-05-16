@@ -135,9 +135,26 @@ function toggleComments(postId) {
     }
 }
 
+function handleSubmitButtons() {
+    var submitButtons = document.getElementsByClassName("submit");
 
+    Array.from(submitButtons).forEach(function(submitButton) {
+        submitButton.addEventListener("mousedown", function() {
+            // Add transparent border when clicked
+            submitButton.style.boxShadow = "0 0 20px 10px rgba(0, 0, 0, 0.2) inset";
+            submitButton.style.transform = "scale(0.975)";
+            submitButton.style.fontSize = "1.025em";
+        });
 
+        submitButton.addEventListener("mouseup", function() {
+            // Remove transparent border when mouse released
+            submitButton.style.boxShadow = "none";
+            submitButton.style.transform = "scale(1)";
+        });
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
+    handleSubmitButtons();
 });

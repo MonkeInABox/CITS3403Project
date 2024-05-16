@@ -8,5 +8,5 @@
         <span style="color: red;">{{ error }}</span>
         {% endfor %}
     </p>
-    <p class="comment_submit"> {{ comment_form.submit() }}</p>
+    {{ comment_form.submit(class="comment_submit submit") }}
 </form>

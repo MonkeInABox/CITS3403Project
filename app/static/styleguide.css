@@ -234,6 +234,7 @@ td.edit_profile > p {
     color: aliceblue !important;
     border: none;
     padding: 2vh;
+    transition: transform 0.1s ease;
 }
 #filter-submit {
     outline: none;
@@ -245,4 +246,5 @@ td.edit_profile > p {
     padding-right: 1em;
     height: 2em;
     width: auto;
+    transition: transform 0.1s ease;
 }
