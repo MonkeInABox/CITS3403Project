@@ -135,6 +135,22 @@ function toggleComments(postId) {
     }
 }
 
+function loadComments(postId) {
+    var commentsContainer = document.getElementById(`toggle-comments-field-${postId}`);
+    var repliesContainer = document.getElementById(`replies-${postId}`);
+    
+    var xhr = new XMLHttpRequest();
+    var url = '/get_comments/' + postId;
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            commentsContainer.innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
+
 function handleSubmitButtons() {
     var submitButtons = document.getElementsByClassName("submit");
 
@@ -241,6 +257,7 @@ function pollForUpdates() {
                     var button = document.getElementById(`toggle-comments-button-${postId}`);
                     if (postId > 0) {
                         console.log("has comments");
+                        loadComments(postId)
                         button.style.display = ''; // Show button
                     } else {
                         postId = Math.abs(postId)
