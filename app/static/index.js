@@ -112,6 +112,7 @@ function buttonHandling() {
 
 function toggleComments(postId) {
     var commentsContainer = document.getElementById(`toggle-comments-field-${postId}`);
+    var repliesContainer = document.getElementById(`replies-${postId}`);
     
     // If the comments are currently hidden, send a request to fetch them
     if (commentsContainer.style.display === 'none') {
@@ -123,12 +124,14 @@ function toggleComments(postId) {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 commentsContainer.innerHTML = xhr.responseText;
                 commentsContainer.style.display = '';
+                repliesContainer.style.display = '';
             }
         };
         xhr.send();
     } else {
         // If the comments are visible, hide them
         commentsContainer.style.display = 'none';
+        repliesContainer.style.display = 'none';
     }
 }
 
