@@ -276,9 +276,17 @@ function pollForUpdates() {
     }, 10000); // Poll every 10 seconds (10000 milliseconds)
 }
 
+function loadURL() {
+    var filter = urlParams.get('filter')
+    if (filter == null) {
+        window.location.href = window.location.href + '?filter=nwst';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
     handleSubmitButtons();
     removeErrorMessages();
     pollForUpdates();
+    loadURL();
 });

@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, render_template_string, make_response
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, make_response
 from app.main.forms import EditProfileForm, SearchForm, Delete, FilterForm
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
@@ -226,34 +226,3 @@ def like_or_dislike(post_id, like_type, medium):
     like_count = len(comment.likes) - len(comment.dislikes)
     return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, comment.likes), "disliked": current_user.id in map(lambda x: x.author_id, comment.dislikes)})
 
-# Define a route to fetch comments for a specific post
-@bp.route('/get_comments/<int:post_id>', methods=['GET'])
-def get_comments(post_id):
-    # Retrieve comments for the specified post (Replace this with your logic)
-    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
-    comments = post.comments
-    # Assuming comments are in HTML format, you can return them directly
-    html_content = render_template_string("""
-        {% for comment in comments %}
-        <p>
-        {% include '_comment.html' %}
-        </p>
-        {% endfor %}
-        """,
-        comments=comments
-    )
-    return html_content
-
-@bp.route('/submit_comment/<int:post_id>', methods=['POST'])
-def submit_comment(post_id):
-    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
-    comment_form = PostNewComment(request.form)
-
-    if comment_form.validate_on_submit() and current_user.is_authenticated:
-        # Create a new comment and associate it with the correct post
-        if post:
-            new_comment = Comment(body=comment_form.body.data, post_id=post_id, author_id=current_user.id)
-            db.session.add(new_comment)
-            db.session.commit()
-            return jsonify({'success': True}), 200  # Return success response
-    return jsonify({'success': False}), 400  # Return success response
