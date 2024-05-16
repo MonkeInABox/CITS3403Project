@@ -235,3 +235,14 @@ td.edit_profile > p {
     border: none;
     padding: 2vh;
 }
+#filter-submit {
+    outline: none;
+    border: none;
+    background-color: rgb(76, 76, 141);
+    color: white;
+    border-radius: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    height: 2em;
+    width: auto;
+}

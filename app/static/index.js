@@ -136,6 +136,8 @@ function toggleComments(postId) {
 }
 
 
+
+
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
 });

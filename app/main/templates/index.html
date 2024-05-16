@@ -6,7 +6,7 @@
         <p style="padding-left:5vw"> 
             {{ filter_form.filter.label }}
             {{ filter_form.filter }}
-            {{ filter_form.submit }}
+            {{ filter_form.submit(id="filter-submit") }}
         </p>
     </form>
     {% for post in posts %}
