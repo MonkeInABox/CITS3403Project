@@ -1,5 +1,5 @@
-from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
-from app.main.forms import EditProfileForm, SearchForm, Delete
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, render_template_string
+from app.main.forms import EditProfileForm, SearchForm, Delete, FilterForm
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
 import sqlalchemy as sa
@@ -26,6 +26,8 @@ def before_request():
 def index():
     '''Main landing page'''
     comment_form = PostNewComment()
+    filter_form = FilterForm()
+    query = 0
 
     if comment_form.validate_on_submit() and current_user.is_authenticated:
         # Create a new comment and associate it with the correct post
@@ -38,9 +40,23 @@ def index():
             db.session.add(new_comment)
             db.session.commit()
 
+    if filter_form.validate_on_submit:
+        # create a new filter
+        if filter_form.filter.data == "nwst":
+            query = sa.select(Post).order_by(Post.timestamp.desc())
+        elif filter_form.filter.data == "ldst":
+            query = sa.select(Post).order_by(Post.timestamp.asc())
+        elif filter_form.filter.data == "mslk":
+            query = sa.select(Post).join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc())
+        elif filter_form.filter.data == "msdk":
+            query = sa.select(Post).join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
+        elif filter_form.filter.data == "mscm":
+            query = sa.select(Post).join(Post.comments).group_by(Post.id).order_by(db.func.count(Post.comments).desc())
+    else:
+        query = sa.select(Post).order_by(Post.timestamp.desc())                       
+
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
-    query = sa.select(Post).order_by(Post.timestamp.desc())
     posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
 
     if posts.has_next:
@@ -53,7 +69,7 @@ def index():
     else:
         prev_url = None
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user)
+    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user, filter_form = filter_form)
 
 # Main profile page 
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])
@@ -174,3 +190,22 @@ def like_or_dislike(post_id, like_type, medium):
         return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
     like_count = len(comment.likes) - len(comment.dislikes)
     return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, comment.likes), "disliked": current_user.id in map(lambda x: x.author_id, comment.dislikes)})
+
+# Define a route to fetch comments for a specific post
+@bp.route('/get_comments/<int:post_id>')
+def get_comments(post_id):
+    # Retrieve comments for the specified post (Replace this with your logic)
+    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+    comments = post.comments
+    # Assuming comments are in HTML format, you can return them directly
+    html_content = render_template_string("""
+        {% for comment in comments %}
+        <p>
+        {% include '_comment.html' %}
+        </p>
+        {% endfor %}
+        """,
+        comments=comments
+    )
+    print(html_content)
+    return html_content

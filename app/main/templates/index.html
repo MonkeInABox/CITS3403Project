@@ -1,6 +1,14 @@
 {% extends "heading.html" %}
 
 {% block content %}
+    <form action="" method = "post">
+        {{ filter_form.hidden_tag() }}
+        <p style="padding-left:5vw"> 
+            {{ filter_form.filter.label }}
+            {{ filter_form.filter }}
+            {{ filter_form.submit }}
+        </p>
+    </form>
     {% for post in posts %}
     <div class="posts">
     <p class = "post">
@@ -11,12 +19,13 @@
                 {% include 'new_comment.html' %}
             </p>
         {% endif %}
-        {% for comment in post.comments %}
-            <p>
-                {% include '_comment.html' %}
-            </p>
-        {% endfor %}
-    
+        <div id="toggle-comments-field-{{post.id}}" style="display: none;">
+            {% for comment in post.comments %}
+                <p>
+                    {% include '_comment.html' %}
+                </p>
+            {% endfor %}
+        </div>
     {% endfor %}
     {% if prev_url %}
         <a style="padding-left: 2vw;" href="{{ prev_url }}">Newer posts</a>

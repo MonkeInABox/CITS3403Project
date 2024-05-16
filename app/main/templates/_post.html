@@ -33,9 +33,12 @@
             {% set class_id = "far fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
         <i class = "{{class_id}}"  id = "dislike-button-post-{{post.id}}"onclick = "dislike({{post.id}}, 'post' )"></i>
+        {% if post.comments %}
+            <i class = "fa-regular fa-comments fa-2x toggle-comments-button"   id = "toggle-comments-button-{{post.id}}" data-post-id="{{post.id}}"></i>
+        {% endif %}
     </div>
     
-    <div>
+    <div id="replies-{{post.id}}" style="display: none;">
         <span style="margin-left: 10vw;" class="replies_heading">Replies:</span>
     </div>
 </div>
