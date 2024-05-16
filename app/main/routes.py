@@ -63,12 +63,8 @@ def index():
 
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
-
-    # Re-add filter argument if it exists
-    if 'filter' in request.args:
-        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
-    else:
-        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+        
+    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
 
     if posts.has_next:
         next_url = url_for('main.index', page=posts.next_num, filter=request.args.get('filter'))
