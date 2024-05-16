@@ -151,10 +151,73 @@ function handleSubmitButtons() {
             submitButton.style.boxShadow = "none";
             submitButton.style.transform = "scale(1)";
         });
+
+        submitButton.addEventListener("click", function() {
+            
+        })
+    });
+}
+function removeErrorMessages() {
+    var submitButtons = document.getElementsByClassName("comment_submit");
+
+    Array.from(submitButtons).forEach(function(submitButton) {
+        var postId = submitButton.getAttribute("data-post-id");
+        submitButton.addEventListener("click", function() {
+            handleNewCommentInput(postId);
+            // Display any existing error messages
+            var errorField = document.getElementById(`comment-error-${postId}`);
+            if (errorField) {
+                errorField.style.display = 'none';
+            }
+        });
+    });
+}
+
+function handleNewCommentInput(postId) {
+    const form = document.getElementById('comment-form-' + postId);
+    const formData = new FormData(form);
+
+    fetch('/', {  // Assuming the route for form submission is the same as the current page route
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Comment Submitted');
+            // Clear the comment input field
+            document.getElementById(`comment-form-${postId}`).reset();
+            // Display flash message
+            document.getElementById('flash-message').style.display = 'block';
+            // Hide flash message after a few seconds
+            setTimeout(() => {
+                document.getElementById('flash-message').style.display = 'none';
+            }, 3000);
+        }
+        else if (response.status === 400) {
+            // Form validation errors received
+            response.json().then(data => {
+                const errors = data.errors;
+                const errorMessage = Object.values(errors).join(', '); // Concatenate error messages
+                
+                // Display the error message in the designated <span> element
+                const errorSpan = document.getElementById(`json-error-${postId}`);
+                const showError = document.getElementById(`comment-error-${postId}`);
+                errorSpan.textContent = errorMessage;
+                showError.style.display='';
+                
+            });
+        }
+        else {
+            console.log ('Comment submission failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting comment:', error);
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
     handleSubmitButtons();
+    removeErrorMessages();
 });

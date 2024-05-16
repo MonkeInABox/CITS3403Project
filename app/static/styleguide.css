@@ -228,7 +228,7 @@ td.edit_profile > p {
     color: rgb(76, 76, 141);
     margin-top: 10vh;
 }
-#submit {
+.submit {
     background-color: rgb(76, 76, 141);
     border-radius: 10px;
     color: aliceblue !important;
@@ -242,6 +242,7 @@ td.edit_profile > p {
     background-color: rgb(76, 76, 141);
     color: white;
     border-radius: 0.5em;
+    padding: 0vh;
     padding-left: 1em;
     padding-right: 1em;
     height: 2em;

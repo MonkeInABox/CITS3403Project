@@ -32,28 +32,22 @@ def index():
     if comment_form.validate_on_submit() and current_user.is_authenticated:
         # Create a new comment and associate it with the correct post
         post_id = request.form.get('post_id')
-        print(f"post id: {post_id}")
 
         post = Post.query.get(post_id)
         if post:
             new_comment = Comment(body=comment_form.body.data, post_id=post_id, author_id=current_user.id)
             db.session.add(new_comment)
             db.session.commit()
+    elif not comment_form.validate_on_submit() and request.method == 'POST':
+        return jsonify(errors=comment_form.errors), 400  # Return 400 if post not found
 
-    if filter_form.validate_on_submit:
-        # create a new filter
-        if filter_form.filter.data == "nwst":
-            query = sa.select(Post).order_by(Post.timestamp.desc())
-        elif filter_form.filter.data == "ldst":
-            query = sa.select(Post).order_by(Post.timestamp.asc())
-        elif filter_form.filter.data == "mslk":
-            query = sa.select(Post).join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc())
-        elif filter_form.filter.data == "msdk":
-            query = sa.select(Post).join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
-        elif filter_form.filter.data == "mscm":
-            query = sa.select(Post).join(Post.comments).group_by(Post.id).order_by(db.func.count(Post.comments).desc())
+    filter_data = request.args.get('filter')
+    if filter_data:
+        query = build_query(filter_data)
     else:
-        query = sa.select(Post).order_by(Post.timestamp.desc())                       
+        query = sa.select(Post).order_by(Post.timestamp.desc())
+
+    print(type(query))     
 
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
@@ -70,6 +64,30 @@ def index():
         prev_url = None
 
     return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user, filter_form = filter_form)
+    
+@bp.route('/filter', methods=['POST'])
+def filter_posts():
+    filter_form = FilterForm(request.form)
+    if filter_form.validate_on_submit():
+        filter_data = filter_form.filter.data
+        # Redirect with filter identifier in the URL
+        return redirect(url_for('main.index', filter=filter_data))
+    else:
+        # Handle validation errors
+        return redirect(url_for('main.index'))
+
+def build_query(filter_data):
+    if filter_data == "nwst":
+        query = sa.select(Post).order_by(Post.timestamp.desc())
+    elif filter_data == "ldst":
+        query = sa.select(Post).order_by(Post.timestamp.asc())
+    elif filter_data == "mslk":
+        query = sa.select(Post).join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc())
+    elif filter_data == "msdk":
+        query = sa.select(Post).join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
+    elif filter_data == "mscm":
+        query = sa.select(Post).join(Post.comments).group_by(Post.id).order_by(db.func.count(Post.comments).desc())
+    return query
 
 # Main profile page 
 @bp.route('/profile/', defaults={'username': None}, methods=['GET'])
@@ -192,7 +210,7 @@ def like_or_dislike(post_id, like_type, medium):
     return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, comment.likes), "disliked": current_user.id in map(lambda x: x.author_id, comment.dislikes)})
 
 # Define a route to fetch comments for a specific post
-@bp.route('/get_comments/<int:post_id>')
+@bp.route('/get_comments/<int:post_id>', methods=['GET'])
 def get_comments(post_id):
     # Retrieve comments for the specified post (Replace this with your logic)
     post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
@@ -209,3 +227,17 @@ def get_comments(post_id):
     )
     print(html_content)
     return html_content
+
+@bp.route('/submit_comment/<int:post_id>', methods=['POST'])
+def submit_comment(post_id):
+    post = db.first_or_404(sa.select(Post).where(Post.id == post_id))
+    comment_form = PostNewComment(request.form)
+
+    if comment_form.validate_on_submit() and current_user.is_authenticated:
+        # Create a new comment and associate it with the correct post
+        if post:
+            new_comment = Comment(body=comment_form.body.data, post_id=post_id, author_id=current_user.id)
+            db.session.add(new_comment)
+            db.session.commit()
+            return jsonify({'success': True}), 200  # Return success response
+    return jsonify({'success': False}), 400  # Return success response
