@@ -101,10 +101,10 @@ class Post(db.Model):
         # Determine start and end post IDs based on page number and posts per page
         if filterType == "nwst" or filterType == "null":
             end_post_id = db.session.query(Post).count()
-            start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page) - 1
+            start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page) + 1
             query = (
                 db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-                .order_by(Post.timestamp.desc())
+                .filter(Post.id.between(start_post_id, end_post_id)).order_by(Post.timestamp.desc())
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
@@ -113,11 +113,12 @@ class Post(db.Model):
             end_post_id = pageNum * posts_per_page
             query = (
                 db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-                .filter(Post.id.between(start_post_id, end_post_id))
-                .order_by(Post.timestamp.asc())
+                .filter(Post.id.between(start_post_id, end_post_id)).order_by(Post.timestamp.asc())
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
+                
+            query = query.offset(start_post_id).limit(posts_per_page)
         elif filterType == "mslk":
             start_post_id = (pageNum - 1) * posts_per_page
             end_post_id = pageNum * posts_per_page
