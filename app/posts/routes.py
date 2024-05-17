@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, make_response
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
 from app.posts.forms import PostNewPost
 from app.main.forms import SearchForm, Delete, FilterForm
 from app.main.routes import _handle_comments_and_filters
@@ -46,10 +46,11 @@ def categories(category):
     if category is None or category not in categories:
         return redirect(url_for('main.index'))
 
-    result = _handle_comments_and_filters(category)
+    result = _handle_comments_and_filters(categories[category])
     if isinstance(result, tuple) and result[1] == 400:
         return result
 
+    print(result)
     return render_template('index.html', title=category, **result)
 
 @bp.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])

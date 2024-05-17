@@ -98,7 +98,7 @@ class Post(db.Model):
         query = 0
         if filterType == "nwst" or filterType == "null":
             end_post_id = db.session.query(Post).count()
-            start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page)
+            start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page) - 1
             query = (
             db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
             .filter(Post.id.between(start_post_id, end_post_id))

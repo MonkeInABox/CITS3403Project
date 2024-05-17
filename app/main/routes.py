@@ -46,14 +46,14 @@ def _handle_comments_and_filters(category=None):
         response = make_response("Filter data set!")
         response.set_cookie('filter', filter_data)
         filter_value = filter_data
-        query = build_query(filter_data)
+        query = build_query(filter_data, category)
     else:
         # If cookie exists
         filter_value = request.cookies.get('filter')
         if filter_value:
-            query = build_query(filter_value)
+            query = build_query(filter_value, category)
         else:
-            query = sa.select(Post).order_by(Post.timestamp.desc())
+            query = build_query(filter_value, category)
             filter_value = 'nwst'   
 
     # Handle pagination and query for posts as usual
@@ -102,7 +102,8 @@ def filter_posts():
         # Handle validation errors
         return redirect(url_for('main.index'))
 
-def build_query(filter_data):
+def build_query(filter_data, category=None):
+    # Base query without category filter
     if filter_data == "nwst":
         query = sa.select(Post).order_by(Post.timestamp.desc())
     elif filter_data == "ldst":
@@ -113,6 +114,16 @@ def build_query(filter_data):
         query = sa.select(Post).join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
     elif filter_data == "mscm":
         query = sa.select(Post).join(Post.comments).group_by(Post.id).order_by(db.func.count(Post.comments).desc())
+    else:
+        query = sa.select(Post).order_by(Post.timestamp.desc())
+
+    # Add category filter if category is not None
+    if category:
+        query = query.filter(Post.category == category)
+
+    #query = query.filter(Post.category == "musc")
+        
+    print(query)
     return query
 
 # Main profile page 

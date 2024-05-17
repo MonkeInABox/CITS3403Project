@@ -13,16 +13,6 @@
       {% else %}
       <title>CITS3403</title>
       {% endif %}
-      <script>
-      var urlParams = new URLSearchParams(window.location.search);
-      var filter = urlParams.get('filter');
-
-      // Check if the filter parameter is empty or null
-      if (!filter) {
-          // Reload the page with the filter parameter set to 'nwst'
-          window.location.href = window.location.href + '?filter=nwst';
-      }
-    </script>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom sticky-top">
