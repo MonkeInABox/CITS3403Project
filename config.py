@@ -16,3 +16,8 @@ class Config:
     MAIL_USE_SSL = False
     MAIL_USERNAME = "jw2151788@gmail.com"
     MAIL_PASSWORD = "krik unac ipdn dnal"
+    CATEGORIES = {
+        "Films": "film",
+        "Music": "musc",
+        "Books": "book"
+    }

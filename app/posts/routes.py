@@ -36,17 +36,10 @@ def newpost():
 @bp.route('/categories/<category>/', methods=['GET', 'POST'])
 def categories(category):
     '''Categories page'''
-
-    categories = {
-        "Films": "film",
-        "Music": "musc",
-        "Books": "book"
-    }
-
-    if category is None or category not in categories:
+    if category is None or category not in current_app.config['CATEGORIES']:
         return redirect(url_for('main.index'))
 
-    result = _handle_comments_and_filters(categories[category])
+    result = _handle_comments_and_filters(current_app.config['CATEGORIES'][category])
     if isinstance(result, tuple) and result[1] == 400:
         return result
 
@@ -88,11 +81,13 @@ def delete_post(post_id):
 
 @bp.route('/check_updates')
 def check_updates():
+    
     page = request.args.get('page', 1, type=int)
+    category = request.args.get('category', None, type=str)
     filter_data = request.args.get('filter')
     print(f"filter {filter_data}")
     print(f"page here is {page}")
-    posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data)
+    posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data, current_app.config['CATEGORIES'][category])
     
     # Convert the result to a list of dictionaries
     print(posts_with_comment_status)

@@ -244,7 +244,8 @@ function pollForUpdates() {
         const urlParams = new URLSearchParams(window.location.search);
         var page = urlParams.get('page');
         var filter = urlParams.get('filter')
-        fetch(`/check_updates?page=${page}&filter=${filter}`) // Replace '/check_updates' with the appropriate route to check for updates
+        var category = window.location.pathname.split('/').filter(Boolean)[1];
+        fetch(`/check_updates?page=${page}&filter=${filter}&category=${category}`) // Replace '/check_updates' with the appropriate route to check for updates
             .then(response => {
                 if (response.ok) {
                     console.log(response);

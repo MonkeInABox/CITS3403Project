@@ -90,46 +90,60 @@ class Post(db.Model):
         posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
         return posts
     
-    def get_posts_with_comment_status(pageNum, filterType):
+    def get_posts_with_comment_status(pageNum, filterType, category):
         # Calculate range of post IDs for the given page number
         posts_per_page = current_app.config['POSTS_PER_PAGE']
         start_post_id = 0
         end_post_id = 0
-        query = 0
+        query = None
+
+        
+        # Determine start and end post IDs based on page number and posts per page
         if filterType == "nwst" or filterType == "null":
             end_post_id = db.session.query(Post).count()
             start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page) - 1
             query = (
-            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-            .filter(Post.id.between(start_post_id, end_post_id))
-            .order_by(Post.timestamp.desc())
+                db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+                .order_by(Post.timestamp.desc())
             )
-        if filterType == "ldst":
+            if category is not None and query is not None:
+                query = query.filter(Post.category == category)
+        elif filterType == "ldst":
             start_post_id = (pageNum - 1) * posts_per_page + 1
             end_post_id = pageNum * posts_per_page
             query = (
-            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-            .filter(Post.id.between(start_post_id, end_post_id))
-            .order_by(Post.timestamp.desc())
+                db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+                .filter(Post.id.between(start_post_id, end_post_id))
+                .order_by(Post.timestamp.asc())
             )
-        if filterType == "mslk":
+            if category is not None and query is not None:
+                query = query.filter(Post.category == category)
+        elif filterType == "mslk":
             start_post_id = (pageNum - 1) * posts_per_page
             end_post_id = pageNum * posts_per_page
             query = (
-            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-            .join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc()).offset(start_post_id).limit(end_post_id)
+                db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+                .join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc())
             )
-        if filterType == "msdk":
+            if category is not None and query is not None:
+                query = query.filter(Post.category == category)
+
+            query = query.offset(start_post_id).limit(posts_per_page)
+        elif filterType == "msdk":
             start_post_id = (pageNum - 1) * posts_per_page
             end_post_id = pageNum * posts_per_page
             query = (
-            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-            .join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc()).offset(start_post_id).limit(end_post_id)
+                db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+                .join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc())
             )
-        # Dont need to filter for most commented as that doesn't exist.
+            if category is not None and query is not None:
+                query = query.filter(Post.category == category)
+            query = query.offset(start_post_id).limit(posts_per_page)
+        
         # Fetch posts and determine if they have comments or not
         posts_with_comments = []
-        if filterType != "mscm":
+        if filterType != "mscm" and query is not None:
+            print(f"query is: {query}")
             for post_id, has_comments in query:
                 if has_comments:
                     posts_with_comments.append(post_id)  # Post has comments
