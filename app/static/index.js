@@ -84,6 +84,10 @@ function buttonHandling() {
                 button.classList.remove("fa-regular");
                 button.classList.add("fa-solid");
             }
+            else if (isClicked) {
+                button.classList.remove("fa-solid");
+                button.classList.add("fa-regular")
+            }
         });
 
         button.addEventListener('mouseout', function() {
@@ -135,7 +139,154 @@ function toggleComments(postId) {
     }
 }
 
+function loadComments(postId) {
+    var commentsContainer = document.getElementById(`toggle-comments-field-${postId}`);
+    var repliesContainer = document.getElementById(`replies-${postId}`);
+    
+    var xhr = new XMLHttpRequest();
+    var url = '/get_comments/' + postId;
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            commentsContainer.innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+}
+
+function handleSubmitButtons() {
+    var submitButtons = document.getElementsByClassName("submit");
+
+    Array.from(submitButtons).forEach(function(submitButton) {
+        submitButton.addEventListener("mousedown", function() {
+            // Add transparent border when clicked
+            submitButton.style.boxShadow = "0 0 20px 10px rgba(0, 0, 0, 0.2) inset";
+            submitButton.style.transform = "scale(0.975)";
+            submitButton.style.fontSize = "1.025em";
+        });
+
+        submitButton.addEventListener("mouseup", function() {
+            // Remove transparent border when mouse released
+            submitButton.style.boxShadow = "none";
+            submitButton.style.transform = "scale(1)";
+        });
+
+        submitButton.addEventListener("click", function() {
+            
+        })
+    });
+}
+function removeErrorMessages() {
+    var submitButtons = document.getElementsByClassName("comment_submit");
+
+    Array.from(submitButtons).forEach(function(submitButton) {
+        var postId = submitButton.getAttribute("data-post-id");
+        submitButton.addEventListener("click", function() {
+            handleNewCommentInput(postId);
+            // Display any existing error messages
+            var errorField = document.getElementById(`comment-error-${postId}`);
+            if (errorField) {
+                errorField.style.display = 'none';
+            }
+        });
+    });
+}
+
+function handleNewCommentInput(postId) {
+    const form = document.getElementById('comment-form-' + postId);
+    const formData = new FormData(form);
+
+    fetch('/', {  // Assuming the route for form submission is the same as the current page route
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Comment Submitted');
+            // Clear the comment input field
+            document.getElementById(`comment-form-${postId}`).reset();
+            // Display flash message
+            document.getElementById('flash-message').style.display = 'block';
+            // Hide flash message after a few seconds
+            setTimeout(() => {
+                document.getElementById('flash-message').style.display = 'none';
+            }, 3000);
+            // Update comment button visibility
+            const button = document.getElementById(`toggle-comments-button-${postId}`);
+            console.log(button)
+            button.style.display = ''; // Show button
+        }
+        else if (response.status === 400) {
+            // Form validation errors received
+            response.json().then(data => {
+                const errors = data.errors;
+                const errorMessage = Object.values(errors).join(', '); // Concatenate error messages
+                // Display the error message in the designated <span> element
+                const errorSpan = document.getElementById(`json-error-${postId}`);
+                const showError = document.getElementById(`comment-error-${postId}`);
+                errorSpan.textContent = errorMessage;
+                showError.style.display='';
+            });
+        }
+        else {
+            console.log ('Comment submission failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting comment:', error);
+    });
+}
+
+function pollForUpdates() {
+    console.log('test');
+    setInterval(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        var page = urlParams.get('page');
+        var filter = urlParams.get('filter')
+        fetch(`/check_updates?page=${page}&filter=${filter}`) // Replace '/check_updates' with the appropriate route to check for updates
+            .then(response => {
+                if (response.ok) {
+                    console.log(response);
+                    return response.json();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log(data)
+                // Update comment button visibility for each post
+                data.forEach(postId => {
+                    console.log(postId)
+                    var button = document.getElementById(`toggle-comments-button-${postId}`);
+                    if (postId > 0) {
+                        console.log("has comments");
+                        loadComments(postId)
+                        button.style.display = ''; // Show button
+                    } else {
+                        postId = Math.abs(postId)
+                        button = document.getElementById(`toggle-comments-button-${postId}`)
+                        button.style.display = 'none'; // Hide button
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error checking for updates:', error);
+            });
+    }, 10000); // Poll every 10 seconds (10000 milliseconds)
+}
+
+function loadURL() {
+    var filter = urlParams.get('filter')
+    if (filter == null) {
+        window.location.href = window.location.href + '?filter=nwst';
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     buttonHandling();
+    handleSubmitButtons();
+    removeErrorMessages();
+    pollForUpdates();
+    loadURL();
 });

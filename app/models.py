@@ -3,6 +3,7 @@ from flask import current_app, request
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from sqlalchemy.sql.expression import select, exists
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
@@ -88,6 +89,54 @@ class Post(db.Model):
         query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
         posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
         return posts
+    
+    def get_posts_with_comment_status(pageNum, filterType):
+        # Calculate range of post IDs for the given page number
+        posts_per_page = current_app.config['POSTS_PER_PAGE']
+        start_post_id = 0
+        end_post_id = 0
+        query = 0
+        if filterType == "nwst":
+            end_post_id = db.session.query(Post).count()
+            start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page)
+            query = (
+            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+            .filter(Post.id.between(start_post_id, end_post_id))
+            .order_by(Post.timestamp.desc())
+            )
+        if filterType == "ldst":
+            start_post_id = (pageNum - 1) * posts_per_page + 1
+            end_post_id = pageNum * posts_per_page
+            query = (
+            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+            .filter(Post.id.between(start_post_id, end_post_id))
+            .order_by(Post.timestamp.desc())
+            )
+        if filterType == "mslk":
+            start_post_id = (pageNum - 1) * posts_per_page
+            end_post_id = pageNum * posts_per_page
+            query = (
+            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+            .join(Post.likes).group_by(Post.id).order_by(db.func.count(Post.likes).desc()).offset(start_post_id).limit(end_post_id)
+            )
+        if filterType == "msdk":
+            start_post_id = (pageNum - 1) * posts_per_page
+            end_post_id = pageNum * posts_per_page
+            query = (
+            db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+            .join(Post.dislikes).group_by(Post.id).order_by(db.func.count(Post.dislikes).desc()).offset(start_post_id).limit(end_post_id)
+            )
+        # Dont need to filter for most commented as that doesn't exist.
+        # Fetch posts and determine if they have comments or not
+        posts_with_comments = []
+        if filterType != "mscm":
+            for post_id, has_comments in query:
+                if has_comments:
+                    posts_with_comments.append(post_id)  # Post has comments
+                else:
+                    posts_with_comments.append(-post_id)  # Post doesn't have comments
+
+        return posts_with_comments
     
     
 @login.user_loader
