@@ -7,6 +7,7 @@ from app.models import User, Post, Comment, Like, Dislike
 from datetime import datetime, timezone
 from app.main import bp
 from app import db
+from urllib.parse import urlparse, urljoin
 
 #Pass stuff to navbar
 @bp.context_processor
@@ -21,10 +22,7 @@ def before_request():
         current_user.last_seen = datetime.now(timezone.utc)
         db.session.commit()
 
-# Landing Page
-@bp.route('/', methods=['GET', 'POST'])
-def index():
-    '''Main landing page'''
+def _handle_comments_and_filters(category=None):
     comment_form = PostNewComment()
     filter_form = FilterForm()
     query = 0
@@ -43,9 +41,6 @@ def index():
         return jsonify(errors=comment_form.errors), 400  # Return 400 if post not found
 
     filter_data = request.args.get('filter')
-    responses = make_response("test")
-    responses.set_cookie('test', "test")
-    # If argument exists
     if filter_data:
         # Set cookie if filter_data exists
         response = make_response("Filter data set!")
@@ -63,28 +58,46 @@ def index():
 
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
-        
     posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
 
-    if posts.has_next:
-        next_url = url_for('main.index', page=posts.next_num, filter=request.args.get('filter'))
-    else:
-        next_url = None
+    next_url = url_for('main.index', page=posts.next_num, filter=request.args.get('filter')) if posts.has_next else None
+    prev_url = url_for('main.index', page=posts.prev_num, filter=request.args.get('filter')) if posts.has_prev else None
 
-    if posts.has_prev:
-        prev_url = url_for('main.index', page=posts.prev_num, filter=request.args.get('filter'))
-    else:
-        prev_url = None
+    return {
+        'comment_form': comment_form,
+        'filter_form': filter_form,
+        'filter_value': filter_value,
+        'posts': posts.items,
+        'next_url': next_url,
+        'prev_url': prev_url,
+        'errors': None
+    }
 
-    return render_template('index.html', title='Home', posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, current_user=current_user, filter_form = filter_form, filter_value=filter_value)
+# Landing Page
+@bp.route('/', methods=['GET', 'POST'])
+def index():
+    '''Main landing page'''
+    result = _handle_comments_and_filters()
+    if isinstance(result, tuple) and result[1] == 400:
+        return result
+
+    return render_template('index.html', title='Home', **result)
     
 @bp.route('/filter', methods=['POST'])
 def filter_posts():
     filter_form = FilterForm(request.form)
     if filter_form.validate_on_submit():
         filter_data = filter_form.filter.data
-        # Redirect with filter identifier in the URL
-        return redirect(url_for('main.index', filter=filter_data))
+        
+        # Extract the current path from the referrer URL
+        referrer = request.referrer
+        parsed_url = urlparse(referrer)
+        current_path = parsed_url.path
+        
+        # Build the new URL with the filter query parameter
+        new_url = urljoin(referrer, f"{current_path}?filter={filter_data}")
+        
+        return redirect(new_url)
     else:
         # Handle validation errors
         return redirect(url_for('main.index'))
@@ -149,7 +162,7 @@ def edit_profile():
                            form=form)
 
 #Search Page
-@bp.route('/search', methods=['POST'])
+@bp.route('/search', methods=['GET','POST'])
 def search():
     form = SearchForm()
     if form.validate_on_submit():

@@ -1,6 +1,7 @@
-from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
+from flask import render_template, flash, redirect, url_for, request, current_app, jsonify, make_response
 from app.posts.forms import PostNewPost
 from app.main.forms import SearchForm, Delete, FilterForm
+from app.main.routes import _handle_comments_and_filters
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required
 from app.models import Post, Comment
@@ -42,52 +43,14 @@ def categories(category):
         "Books": "book"
     }
 
-    if category == None:
-        return url_for('main.index')
-    elif category not in categories:
-        return url_for('main.index')
-    
-    comment_form = PostNewComment()
-    filter_form = FilterForm()
+    if category is None or category not in categories:
+        return redirect(url_for('main.index'))
 
-    if comment_form.validate_on_submit() and current_user.is_authenticated:
-        # Create a new comment and associate it with the correct post
-        post_id = request.form.get('post_id')
-        print(f"post id: {post_id}")
+    result = _handle_comments_and_filters(category)
+    if isinstance(result, tuple) and result[1] == 400:
+        return result
 
-        post = Post.query.get(post_id)
-        if post:
-            new_comment = Comment(body=comment_form.body.data, post_id=post_id, author_id=current_user.id)
-            db.session.add(new_comment)
-            db.session.commit()
-    
-    if filter_form.validate_on_submit():
-        if filter_form.filter.data == "nwst":
-            query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
-        elif filter_form.filter.data == "ldst":
-            query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.asc())
-        elif filter_form.filter.data == "mslk":
-            query = sa.select(Post).join(Post.likes).group_by(Post.id).filter_by(category=category).order_by(db.func.count(Post.likes).desc())
-        elif filter_form.filter.data == "msdk":
-            query = sa.select(Post).join(Post.dislikes).group_by(Post.id).filter_by(category=category).order_by(db.func.count(Post.dislikes).desc())
-        elif filter_form.filter.data == "mscm":
-            query = sa.select(Post).join(Post.comments).group_by(Post.id).filter_by(category=category).order_by(db.func.count(Post.comments).desc())
-        page = request.args.get('page', 1, type=int)
-        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
-    else:
-        posts = Post.get_posts_by_cat(categories[category])
-
-    if posts.has_next:
-        next_url = url_for('main.index', page=posts.next_num)
-    else:
-        next_url = None
-
-    if posts.has_prev:
-        prev_url = url_for('main.index', page=posts.prev_num)
-    else:
-        prev_url = None
-
-    return render_template('index.html', title=category, posts=posts.items, next_url=next_url, prev_url=prev_url, comment_form=comment_form, filter_form = filter_form)
+    return render_template('index.html', title=category, **result)
 
 @bp.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
 @login_required

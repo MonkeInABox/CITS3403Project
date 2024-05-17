@@ -96,7 +96,7 @@ class Post(db.Model):
         start_post_id = 0
         end_post_id = 0
         query = 0
-        if filterType == "nwst":
+        if filterType == "nwst" or filterType == "null":
             end_post_id = db.session.query(Post).count()
             start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page)
             query = (
