@@ -84,14 +84,8 @@ def check_updates():
     
     page = request.args.get('page', 1, type=int)
     category = request.args.get('category', None, type=str)
-    try:
-        category = current_app.config['Categories'][category]
-    except:
-        category = None
     filter_data = request.args.get('filter')
-    print(f"filter {filter_data}")
-    print(f"page here is {page}")
-    posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data, category)
+    posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data, current_app.config['CATEGORIES'][category])
     
     # Convert the result to a list of dictionaries
     print(posts_with_comment_status)

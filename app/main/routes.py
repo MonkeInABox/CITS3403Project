@@ -121,9 +121,7 @@ def build_query(filter_data, category=None):
     if category:
         query = query.filter(Post.category == category)
 
-    #query = query.filter(Post.category == "musc")
         
-    print(query)
     return query
 
 # Main profile page 

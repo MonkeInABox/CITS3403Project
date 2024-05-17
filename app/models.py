@@ -96,7 +96,6 @@ class Post(db.Model):
         start_post_id = 0
         end_post_id = 0
         query = None
-
         
         # Determine start and end post IDs based on page number and posts per page
         if filterType == "nwst" or filterType == "null":
@@ -144,7 +143,6 @@ class Post(db.Model):
         # Fetch posts and determine if they have comments or not
         posts_with_comments = []
         if filterType != "mscm" and query is not None:
-            print(f"query is: {query}")
             for post_id, has_comments in query:
                 if has_comments:
                     posts_with_comments.append(post_id)  # Post has comments
