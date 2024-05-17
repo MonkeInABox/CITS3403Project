@@ -1,12 +1,16 @@
-<form action="" method="post">
+<form id="comment-form-{{ post.id }}" method="post" post-id="submit-form-{{ post.id }}">
     {{ comment_form.hidden_tag() }}
-    <input type="hidden" name="post_id" value=" {{ post.id }}">
+    <input type="hidden" name="post_id" value="{{ post.id }}">
     <p style="padding-left:10vw">
         Reply with your suggestions! <br>
         {{ comment_form.body(size=200) }} <br>
-        {% for error in comment_form.body.errors %}
-        <span style="color: red;">{{ error }}</span>
-        {% endfor %}
+        <span id="comment-error-{{ post.id }}" style="display: none;">
+        <span class="comment-errors" id="json-error-{{post.id}}" style="color: red;"></span>
+        </span>
     </p>
-    <p class="comment_submit"> {{ comment_form.submit() }}</p>
+    <button type="button" class="comment_submit submit" data-post-id="{{ post.id }}">Submit</button>
 </form>
+
+<div id="flash-message" style="display: none;">
+    Comment submitted successfully!
+</div>

@@ -1,12 +1,18 @@
 {% extends "heading.html" %}
 
 {% block content %}
-    <form action="" method = "post">
+    <form action="{{ url_for('main.filter_posts') }}" method = "post">
         {{ filter_form.hidden_tag() }}
         <p style="padding-left:5vw"> 
             {{ filter_form.filter.label }}
-            {{ filter_form.filter }}
-            {{ filter_form.submit }}
+            <select name="filter" id="search-filter">
+                <option value="nwst" {% if filter_value == 'nwst' %} selected {% endif %}>Newest</option>
+                <option value="ldst" {% if filter_value == 'ldst' %} selected {% endif %}>Oldest</option>
+                <option value="mslk" {% if filter_value == 'mslk' %} selected {% endif %}>Most Liked</option>
+                <option value="msdk" {% if filter_value == 'msdk' %} selected {% endif %}>Most Disliked</option>
+                <option value="mscm" {% if filter_value == 'mscm' %} selected {% endif %}>Most Commented</option>
+            </select>
+            {{ filter_form.submit(id="filter-submit", class="submit") }}
         </p>
     </form>
     {% for post in posts %}
@@ -20,12 +26,12 @@
             </p>
         {% endif %}
         <div id="toggle-comments-field-{{post.id}}" style="display: none;">
-            {% for comment in post.comments %}
+            {% for comment in sorted_comments %}
                 <p>
                     {% include '_comment.html' %}
                 </p>
             {% endfor %}
-        </div>
+        </div>              
     {% endfor %}
     {% if prev_url %}
         <a style="padding-left: 2vw;" href="{{ prev_url }}">Newer posts</a>
