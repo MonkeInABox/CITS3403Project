@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, current_app, jsonify
 from app.posts.forms import PostNewPost
-from app.main.forms import SearchForm, Delete, FilterForm
+from app.main.forms import SearchForm, Delete
 from app.main.routes import _handle_comments_and_filters
 from app.comments.forms import PostNewComment
 from flask_login import current_user, login_required

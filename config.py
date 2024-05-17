@@ -19,5 +19,7 @@ class Config:
     CATEGORIES = {
         "Films": "film",
         "Music": "musc",
-        "Books": "book"
+        "Books": "book",
+        "TV_Shows": "tvsh",
+        "Video_Games": "vdga"
     }
