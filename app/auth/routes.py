@@ -73,7 +73,8 @@ def reset_password(token):
         user = User.query.filter_by(email=email).first()
         user.set_password(new_password)
         db.session.commit()
-        return "Password has been reset successfully.", 200
+        flash('Password has been reset successfully.', 'success')  # Flash success message
+        return redirect(url_for('main.index'))  # Redirect to main.index
     
     # Render a form for the user to enter their new password
     return render_template('passwordreset.html')
