@@ -41,30 +41,30 @@ def _handle_comments_and_filters(category=None):
     elif not comment_form.validate_on_submit() and request.method == 'POST':
         return jsonify(errors=comment_form.errors), 400  # Return 400 if post not found
 
+    print(request)
     filter_data = request.args.get('filter')
-    search_data = request.args.get('search_term')
+    search_term = request.args.get('search_term')
+    print(f"SEARCH TERM IS: {search_term}")
     if filter_data:
         # Set cookie if filter_data exists
         response = make_response("Filter data set!")
         response.set_cookie('filter', filter_data)
         filter_value = filter_data
-        if search_data:
-            query = build_query(filter_data, category, search_data)
-        else:
-            query = build_query(filter_data, category, search_data)
+        query = build_query(filter_data, category, search_term)
     else:
         # If cookie exists
         filter_value = request.cookies.get('filter')
         if filter_value:
-            query = build_query(filter_value, category, search_data)
+            query = build_query(filter_value, category, search_term)
         else:
             filter_value = 'nwst'
-            query = build_query(filter_value, category, search_data)
+            query = build_query(filter_value, category, search_term)
                
 
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
     posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
+    print(query)
 
     next_url = url_for('main.index', page=posts.next_num, filter=request.args.get('filter')) if posts.has_next else None
     prev_url = url_for('main.index', page=posts.prev_num, filter=request.args.get('filter')) if posts.has_prev else None
@@ -72,7 +72,7 @@ def _handle_comments_and_filters(category=None):
     return {
         'comment_form': comment_form,
         'search_form': search_form,
-        'search_data': search_data,
+        'search_term': search_term,
         'filter_form': filter_form,
         'filter_value': filter_value,
         'posts': posts.items,
@@ -101,9 +101,15 @@ def filter_posts():
         referrer = request.referrer
         parsed_url = urlparse(referrer)
         current_path = parsed_url.path
+
+        search_term = request.args.get('search_term')
         
         # Build the new URL with the filter query parameter
-        new_url = urljoin(referrer, f"{current_path}?filter={filter_data}")
+        if search_term:
+            new_url = urljoin(referrer, f"{current_path}?filter={filter_data}&search_term={search_term}")
+        else:
+            new_url = urljoin(referrer, f"{current_path}?filter={filter_data}")
+
         
         return redirect(new_url)
     else:
@@ -129,7 +135,9 @@ def build_query(filter_data, category=None, search_term=None):
     if category:
         query = query.filter(Post.category == category)
 
+    print(f"search term is {search_term}")
     if search_term:
+        print("SEARCH TERMMMMMMMMM")
         query = query.filter(Post.body.like('%' + search_term + '%'))
    
     return query
@@ -181,7 +189,7 @@ def edit_profile():
                            form=form)
 
 #Search Page
-@bp.route('/search', methods=['GET','POST'])
+@bp.route('/search', methods=['GET', 'POST'])
 def search():
     search_form = SearchForm(request.form)
     if search_form.validate_on_submit():
@@ -192,8 +200,15 @@ def search():
         parsed_url = urlparse(referrer)
         current_path = parsed_url.path
         
-        # Build the new URL with the filter query parameter
-        new_url = urljoin(referrer, f"{current_path}?search_term={search_data}")
+        # Check if filter parameter exists in the request
+        filter_param = request.args.get('filter')
+        
+        # Build the new URL with the search and possibly filter query parameters
+        new_query_params = f"search_term={search_data}"
+        if filter_param:
+            new_query_params += f"&filter={filter_param}"
+        
+        new_url = urljoin(referrer, f"{current_path}?{new_query_params}")
         
         return redirect(new_url)
     else:

@@ -5,7 +5,7 @@
         <h2> Search results for: {{ search_data }} </h2>
         <br>
     {% endif %}
-    <form action="{{ url_for('main.filter_posts') }}" method = "post">
+    <form action="{{ url_for('main.filter_posts', **request.args) }}" method = "post">
         {{ filter_form.hidden_tag() }}
         <p style="padding-left:5vw"> 
             {{ filter_form.filter.label }}
