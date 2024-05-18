@@ -19,10 +19,18 @@
                 <td style="margin-left: left;">
                     Posts:
                     {% for post in posts %}
-                    <p>
-                    {% include '_post.html' %}
-                    </p>
-                    {% endfor %}
+                        <div class="posts">
+                        <p class = "post">
+                            {% include '_post.html' %}
+                            </p>
+                            <div id="toggle-comments-field-{{post.id}}" style="display: none;">
+                                {% for comment in sorted_comments %}
+                                    <p>
+                                        {% include '_comment.html' %}
+                                    </p>
+                                {% endfor %}
+                            </div>              
+                        {% endfor %}
                 </td>
             </tr>
             <tr>

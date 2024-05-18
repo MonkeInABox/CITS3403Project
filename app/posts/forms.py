@@ -8,7 +8,9 @@ class PostNewPost(FlaskForm):
                            choices=[
                                ('film', 'Films'),   # DO NOT GO ABOVE 4 CHARS FOR DATABASE VALUE
                                ('musc', 'Music'),  # DATABASE CAN ONLY HANDLE 4 CHARS!!!
-                               ('book', 'Books')
+                               ('book', 'Books'),
+                               ('tvsh', 'TV Shows'),
+                               ('vdga', 'Video Games')
                            ],
                            default='film')
     submit = SubmitField('Submit Post')
