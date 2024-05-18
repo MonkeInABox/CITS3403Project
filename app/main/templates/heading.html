@@ -32,6 +32,15 @@
               <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('posts.categories', category='Books') }}">Books</a>
               </li>
+<<<<<<< Updated upstream
+=======
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('posts.categories', category='TV_Shows') }}">TV Shows</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('posts.categories', category='Video_Games') }}">Video Games</a>
+              </li>
+>>>>>>> Stashed changes
               {% if current_user.is_anonymous %}
               <li class="nav-item">
                   <a class="nav-link nav-log" id="login" href="{{ url_for('auth.login') }}">Login</a>
