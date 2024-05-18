@@ -46,8 +46,8 @@ class UserModelCase(unittest.TestCase):
         post_id = 4
         post_body = "I love Harrison Ford, what's a good movie with him in it?"
         comment_body = "OMG, you HAVE to watch Blade Runner!"
-        self.app.post('/submit_comment', body = post_body, user_id = post_u.id, id = post_id)
-        self.app.post('/newcomment', body = comment_body, author_id = comment_u.id, post_id = post_id)
+        self.app.post('/newpost', body = post_body, user_id = post_u.id, id = post_id)
+        self.app.post('/submit_comment', body = comment_body, author_id = comment_u.id, post_id = post_id)
         comment = db.select(Post).join(Comment).group_by(Post.id).filter_by(author_id=comment_u.id)
         self.assertTrue(comment is not None)
 
