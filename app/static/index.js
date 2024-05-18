@@ -238,15 +238,17 @@ function handleNewCommentInput(postId) {
         });
 }
 
+
 function pollForUpdates() {
     console.log('test');
     setInterval(() => {
         const urlParams = new URLSearchParams(window.location.search);
         var page = urlParams.get('page');
         var filter = urlParams.get('filter')
+        var search_term = urlParams.get('search_term')
         var category = window.location.pathname.split('/').filter(Boolean)[1];
         console.log(category)
-        fetch(`/check_updates?page=${page}&filter=${filter}&category=${category}`) // Replace '/check_updates' with the appropriate route to check for updates
+        fetch(`/check_updates?page=${page}&filter=${filter}&category=${category}&search_term=${search_term}`) // Replace '/check_updates' with the appropriate route to check for updates
             .then(response => {
                 if (response.ok) {
                     console.log(response);
