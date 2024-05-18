@@ -1,5 +1,5 @@
-function like(postId, medium){
-    if (medium == "post"){
+function like(postId, medium) {
+    if (medium == "post") {
         var likeCount = document.getElementById(`likes-count-post-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
         var likeButton = document.getElementById(`like-button-post-${postId}`);
@@ -7,7 +7,7 @@ function like(postId, medium){
         var not_liked_class_name = "far fa-thumbs-up fa-2x"
         var disliked_class_name = "fas fa-thumbs-down fa-2x"
         var not_disliked_class_name = "far fa-thumbs-down fa-2x"
-    } else{
+    } else {
         var likeCount = document.getElementById(`likes-count-comment-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-comment-${postId}`);
         var likeButton = document.getElementById(`like-button-comment-${postId}`);
@@ -17,25 +17,25 @@ function like(postId, medium){
         var not_disliked_class_name = "far fa-thumbs-down fa-lg"
     }
 
-    fetch(`/like/${postId}/like/${medium}`, {method: "POST"})
+    fetch(`/like/${postId}/like/${medium}`, { method: "POST" })
         .then((res) => res.json())
         .then((data) => {
             likeCount.innerHTML = data["likes"];
-            if(data["liked"]  === true){
+            if (data["liked"] === true) {
                 likeButton.className = liked_class_name
-            } else(
+            } else (
                 likeButton.className = not_liked_class_name
             )
-            if(data["disliked"]  === true){
+            if (data["disliked"] === true) {
                 dislikeButton.className = disliked_class_name
-            } else(
+            } else (
                 dislikeButton.className = not_disliked_class_name
             )
         })
 }
 
-function dislike(postId, medium){
-    if (medium == "post"){
+function dislike(postId, medium) {
+    if (medium == "post") {
         var likeCount = document.getElementById(`likes-count-post-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
         var likeButton = document.getElementById(`like-button-post-${postId}`);
@@ -43,7 +43,7 @@ function dislike(postId, medium){
         var not_liked_class_name = "far fa-thumbs-up fa-2x"
         var disliked_class_name = "fas fa-thumbs-down fa-2x"
         var not_disliked_class_name = "far fa-thumbs-down fa-2x"
-    } else{
+    } else {
         var likeCount = document.getElementById(`likes-count-comment-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-comment-${postId}`);
         var likeButton = document.getElementById(`like-button-comment-${postId}`);
@@ -52,34 +52,34 @@ function dislike(postId, medium){
         var disliked_class_name = "fas fa-thumbs-down fa-lg"
         var not_disliked_class_name = "far fa-thumbs-down fa-lg"
     }
-        
-    fetch(`/like/${postId}/dislike/${medium}`, {method: "POST"})
-    .then((res) => res.json())
-    .then((data) => {
-        likeCount.innerHTML = data["likes"];
-        if(data["disliked"]  === true){
-            dislikeButton.className = disliked_class_name
-        } else(
-            dislikeButton.className = not_disliked_class_name
-        )
-        if(data["liked"]  === true){
-            likeButton.className = liked_class_name
-        } else(
-            likeButton.className = not_liked_class_name
-        )
-    })
+
+    fetch(`/like/${postId}/dislike/${medium}`, { method: "POST" })
+        .then((res) => res.json())
+        .then((data) => {
+            likeCount.innerHTML = data["likes"];
+            if (data["disliked"] === true) {
+                dislikeButton.className = disliked_class_name
+            } else (
+                dislikeButton.className = not_disliked_class_name
+            )
+            if (data["liked"] === true) {
+                likeButton.className = liked_class_name
+            } else (
+                likeButton.className = not_liked_class_name
+            )
+        })
 }
 
 function buttonHandling() {
     var buttons = document.getElementsByClassName("toggle-comments-button");
 
-    Array.from(buttons).forEach(function(button) {
+    Array.from(buttons).forEach(function (button) {
         var postId = button.getAttribute("data-post-id");
-        
+
         // Add a variable to track if the button is clicked
         var isClicked = false;
 
-        button.addEventListener('mouseover', function() {
+        button.addEventListener('mouseover', function () {
             if (!isClicked) {
                 button.classList.remove("fa-regular");
                 button.classList.add("fa-solid");
@@ -90,7 +90,7 @@ function buttonHandling() {
             }
         });
 
-        button.addEventListener('mouseout', function() {
+        button.addEventListener('mouseout', function () {
             if (!isClicked) {
                 button.classList.remove("fa-solid");
                 button.classList.add("fa-regular");
@@ -98,16 +98,16 @@ function buttonHandling() {
             }
         });
 
-        button.addEventListener('mousedown', function() {
+        button.addEventListener('mousedown', function () {
             button.style.transform = "scale(0.85)";
             toggleComments(postId);
         });
 
-        button.addEventListener('mouseup', function() {
+        button.addEventListener('mouseup', function () {
             button.style.transform = "scale(1)";
         });
 
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             isClicked = !isClicked; // Toggle clicked state
         });
 
@@ -117,14 +117,14 @@ function buttonHandling() {
 function toggleComments(postId) {
     var commentsContainer = document.getElementById(`toggle-comments-field-${postId}`);
     var repliesContainer = document.getElementById(`replies-${postId}`);
-    
+
     // If the comments are currently hidden, send a request to fetch them
     if (commentsContainer.style.display === 'none') {
         var xhr = new XMLHttpRequest();
         var url = '/get_comments/' + postId;
         xhr.open('GET', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 commentsContainer.innerHTML = xhr.responseText;
                 commentsContainer.style.display = '';
@@ -142,12 +142,12 @@ function toggleComments(postId) {
 function loadComments(postId) {
     var commentsContainer = document.getElementById(`toggle-comments-field-${postId}`);
     var repliesContainer = document.getElementById(`replies-${postId}`);
-    
+
     var xhr = new XMLHttpRequest();
     var url = '/get_comments/' + postId;
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             commentsContainer.innerHTML = xhr.responseText;
         }
@@ -158,31 +158,31 @@ function loadComments(postId) {
 function handleSubmitButtons() {
     var submitButtons = document.getElementsByClassName("submit");
 
-    Array.from(submitButtons).forEach(function(submitButton) {
-        submitButton.addEventListener("mousedown", function() {
+    Array.from(submitButtons).forEach(function (submitButton) {
+        submitButton.addEventListener("mousedown", function () {
             // Add transparent border when clicked
             submitButton.style.boxShadow = "0 0 20px 10px rgba(0, 0, 0, 0.2) inset";
             submitButton.style.transform = "scale(0.975)";
             submitButton.style.fontSize = "1.025em";
         });
 
-        submitButton.addEventListener("mouseup", function() {
+        submitButton.addEventListener("mouseup", function () {
             // Remove transparent border when mouse released
             submitButton.style.boxShadow = "none";
             submitButton.style.transform = "scale(1)";
         });
 
-        submitButton.addEventListener("click", function() {
-            
+        submitButton.addEventListener("click", function () {
+
         })
     });
 }
 function removeErrorMessages() {
     var submitButtons = document.getElementsByClassName("comment_submit");
 
-    Array.from(submitButtons).forEach(function(submitButton) {
+    Array.from(submitButtons).forEach(function (submitButton) {
         var postId = submitButton.getAttribute("data-post-id");
-        submitButton.addEventListener("click", function() {
+        submitButton.addEventListener("click", function () {
             handleNewCommentInput(postId);
             // Display any existing error messages
             var errorField = document.getElementById(`comment-error-${postId}`);
@@ -201,41 +201,41 @@ function handleNewCommentInput(postId) {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        if (response.ok) {
-            console.log('Comment Submitted');
-            // Clear the comment input field
-            document.getElementById(`comment-form-${postId}`).reset();
-            // Display flash message
-            document.getElementById('flash-message').style.display = 'block';
-            // Hide flash message after a few seconds
-            setTimeout(() => {
-                document.getElementById('flash-message').style.display = 'none';
-            }, 3000);
-            // Update comment button visibility
-            const button = document.getElementById(`toggle-comments-button-${postId}`);
-            console.log(button)
-            button.style.display = ''; // Show button
-        }
-        else if (response.status === 400) {
-            // Form validation errors received
-            response.json().then(data => {
-                const errors = data.errors;
-                const errorMessage = Object.values(errors).join(', '); // Concatenate error messages
-                // Display the error message in the designated <span> element
-                const errorSpan = document.getElementById(`json-error-${postId}`);
-                const showError = document.getElementById(`comment-error-${postId}`);
-                errorSpan.textContent = errorMessage;
-                showError.style.display='';
-            });
-        }
-        else {
-            console.log ('Comment submission failed');
-        }
-    })
-    .catch(error => {
-        console.error('Error submitting comment:', error);
-    });
+        .then(response => {
+            if (response.ok) {
+                console.log('Comment Submitted');
+                // Clear the comment input field
+                document.getElementById(`comment-form-${postId}`).reset();
+                // Display flash message
+                document.getElementById('flash-message').style.display = 'block';
+                // Hide flash message after a few seconds
+                setTimeout(() => {
+                    document.getElementById('flash-message').style.display = 'none';
+                }, 3000);
+                // Update comment button visibility
+                const button = document.getElementById(`toggle-comments-button-${postId}`);
+                console.log(button)
+                button.style.display = ''; // Show button
+            }
+            else if (response.status === 400) {
+                // Form validation errors received
+                response.json().then(data => {
+                    const errors = data.errors;
+                    const errorMessage = Object.values(errors).join(', '); // Concatenate error messages
+                    // Display the error message in the designated <span> element
+                    const errorSpan = document.getElementById(`json-error-${postId}`);
+                    const showError = document.getElementById(`comment-error-${postId}`);
+                    errorSpan.textContent = errorMessage;
+                    showError.style.display = '';
+                });
+            }
+            else {
+                console.log('Comment submission failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting comment:', error);
+        });
 }
 
 function pollForUpdates() {
@@ -279,7 +279,7 @@ function pollForUpdates() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     buttonHandling();
     handleSubmitButtons();
     removeErrorMessages();
