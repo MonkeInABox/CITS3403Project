@@ -1,48 +1,49 @@
 {% extends "heading.html" %}
 
 {% block content %}
-    <table class="profile_page" style="margin-right: 20vw;">
-        <tr valign="top" style="max-width: 90%;">
-            <td>
-                <img src="{{ user.avatar(128) }}" class="profile_pic">
-                <h1 style="padding-top: 5%;">{{ user.username }}</h1>
-                {% if user.about_me %}<p>About me:</p><p class="about_me">{{ user.about_me }}</p>{% endif %}
-                {% if user.last_seen %}<p class="last_seen">Last seen on: {{ user.last_seen }}</p>{% endif %}
-                {% if current_user.is_authenticated %}
-                    {% if username is none or username == current_user.username %}
-                    <a href="{{ url_for('main.delete_user', user_id=current_user.id) }}">Delete Profile</a>
-                    {% endif %}
-                {% endif %}
-            </td>
-        </tr>
-            <tr style="text-align: left;">
-                <td style="margin-left: left;">
-                    Posts:
-                    {% for post in posts %}
-                        <div class="posts">
-                        <p class = "post">
-                            {% include '_post.html' %}
-                            </p>
-                            <div id="toggle-comments-field-{{post.id}}" style="display: none;">
-                                {% for comment in sorted_comments %}
-                                    <p>
-                                        {% include '_comment.html' %}
-                                    </p>
-                                {% endfor %}
-                            </div>              
-                        {% endfor %}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    {% if prev_url %}
-                    <a href="{{ prev_url }}">Newer posts</a>
-                    {% endif %}
-                    {% if next_url %}
-                    <a href="{{ next_url }}">Older posts</a>
-                    {% endif %}
-                </td>
-            </tr>
-        </tr>
-    </table>
+<table class="profile_page" style="margin-left: 14.5vw;">
+    <tr valign="top" style="max-width: 90%;">
+        <td>
+            <img src="{{ user.avatar(128) }}" class="profile_pic">
+            <h1 style="padding-top: 5%;">{{ user.username }}</h1>
+            {% if user.about_me %}<p>About me:</p>
+            <p class="about_me">{{ user.about_me }}</p>{% endif %}
+            {% if user.last_seen %}<p class="last_seen">Last seen on: {{ user.last_seen }}</p>{% endif %}
+            {% if current_user.is_authenticated %}
+            {% if username is none or username == current_user.username %}
+            <a href="{{ url_for('main.delete_user', user_id=current_user.id) }}">Delete Profile</a>
+            {% endif %}
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Posts:
+            {% for post in posts %}
+            <div class="posts">
+                <p class="post">
+                    {% include '_post.html' %}
+                </p>
+                <div id="toggle-comments-field-{{post.id}}" style="display: none;">
+                    {% for comment in sorted_comments %}
+                    <p>
+                        {% include '_comment.html' %}
+                    </p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if prev_url %}
+            <a href="{{ prev_url }}">Newer posts</a>
+            {% endif %}
+            {% if next_url %}
+            <a href="{{ next_url }}">Older posts</a>
+            {% endif %}
+        </td>
+    </tr>
+    </tr>
+</table>
 {% endblock %}

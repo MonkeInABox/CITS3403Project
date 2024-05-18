@@ -24,7 +24,7 @@ a:hover {
 }
 
 .nav-log {
-    align-self:flex-end !important;
+    align-self: flex-end !important;
 }
 
 .search_bar {
@@ -172,6 +172,7 @@ p.password_area {
 }
 
 table.profile_page {
+    padding-left: 25vw;
     text-align: center;
     width: 50vw;
 }
