@@ -19,7 +19,7 @@ def heading():
 @bp.before_app_request
 def before_request():
     if current_user.is_authenticated:
-        current_user.last_seen = datetime.now(timezone.utc)
+        current_user.last_seen = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
         db.session.commit()
 
 def _handle_comments_and_filters(category=None):
@@ -147,6 +147,7 @@ def build_query(filter_data, category=None, search_term=None):
 @bp.route('/profile/<username>', methods=['GET'])
 def profile(username):
     '''Profile page'''
+    search_form = SearchForm()
 
     # Get page number from query string or default to 1
     page = request.args.get('page', 1, type=int)
@@ -172,12 +173,13 @@ def profile(username):
     prev_url = url_for('main.profile', username=username, page=posts.prev_num) if posts.has_prev else None
 
     # Render the profile page with user information and posts
-    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url, username=username)
+    return render_template('profile.html', user=user, posts=posts.items, next_url=next_url, prev_url=prev_url, username=username, search_form=search_form)
 
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
+    search_form = SearchForm()
     if form.validate_on_submit():
         current_user.about_me = form.about_me.data
         db.session.commit()
@@ -186,7 +188,7 @@ def edit_profile():
     elif request.method == 'GET':
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile',
-                           form=form)
+                           form=form, search_form=search_form)
 
 #Search Page
 @bp.route('/search', methods=['GET', 'POST'])

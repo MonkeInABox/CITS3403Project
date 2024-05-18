@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
 
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     
-    last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(default=lambda: datetime.now(timezone.utc))
+    last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(default=lambda: datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -99,13 +99,14 @@ class Post(db.Model):
         
         # Determine start and end post IDs based on page number and posts per page
         if filterType == "nwst" or filterType == "null":
+            print("Newest")
             start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page) + 1
             query = (
                 db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
-            if search_term is not None and query is not None:
+            if search_term != "null":
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
             # Apply ordering by timestamp descending
@@ -114,21 +115,24 @@ class Post(db.Model):
             # Apply limit and offset for pagination
             query = query.limit(posts_per_page).offset((pageNum - 1) * posts_per_page)
         elif filterType == "ldst":
-            start_post_id = (pageNum - 1) * posts_per_page + 1
-            query = (
-                db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
-            )
-            if category is not None and query is not None:
+            # Calculate the starting post ID for pagination
+            start_post_id = (pageNum - 1) * posts_per_page
+            
+            # Initialize the query to fetch Post IDs and a flag indicating whether each post has comments
+            query = db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
+
+            # Apply filters if provided
+            if category is not None:
                 query = query.filter(Post.category == category)
-            if search_term is not None and query is not None:
+            if search_term != "null":
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
+            # Apply ordering by timestamp in descending order
             query = query.order_by(Post.timestamp.desc())
 
             # Apply limit and offset for pagination
-            query = query.limit(posts_per_page).offset((pageNum - 1) * posts_per_page)
-                
-            query = query.offset(start_post_id).limit(posts_per_page)
+            query = query.limit(posts_per_page).offset(start_post_id)
+            print(query)
         elif filterType == "mslk":
             start_post_id = (pageNum - 1) * posts_per_page
             end_post_id = pageNum * posts_per_page
@@ -138,7 +142,7 @@ class Post(db.Model):
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
-            if search_term is not None and query is not None:
+            if search_term != "null":
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
             query = query.offset(start_post_id).limit(posts_per_page)
@@ -151,7 +155,7 @@ class Post(db.Model):
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
-            if search_term is not None and query is not None:
+            if search_term != "null":
                 query = query.filter(Post.body.like('%' + search_term + '%'))
                 
             query = query.offset(start_post_id).limit(posts_per_page)
