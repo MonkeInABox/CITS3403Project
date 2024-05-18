@@ -4,74 +4,87 @@ body {
     color: #152238;
     background-color: #e5ebf8;
 }
+
 a {
     text-decoration: none;
     color: #152238;
 }
+
 a:hover {
     text-decoration: underline;
 }
+
 .fa-cog {
-    color:rgba(76, 76, 141, 0.544);
+    color: rgba(76, 76, 141, 0.544);
 }
+
 .fa-cog:hover {
     text-decoration: none;
     color: rgba(76, 76, 141);
 }
+
 .nav-log {
-    padding-left: 57vw !important;
+    padding-left: 42vw !important;
 }
+
 .search_bar {
-    all:unset;
+    all: unset;
     width: 7.5vw;
     border: none;
     background-color: rgba(170, 170, 199);
-    color:#152238;
+    color: #152238;
     padding-left: 0.5em;
 }
+
 .search_bar:focus {
     background-color: white;
     color: #152238;
 }
+
 .search_button {
     all: unset;
     border-radius: 0.4em;
     padding-left: 0.5em;
     padding-right: 0.5em;
-    background-color: #152238 0.2;
     border: solid #152238;
 }
+
 .search_button:hover {
     box-shadow: 0 0 8px #152238;
 }
+
 h1 {
     text-align: center;
 }
+
 .error {
     background-color: red;
 }
+
 .page_body {
     width: 100vw;
     padding-bottom: 5vh;
 }
+
 .navbar-custom {
     background-color: rgb(76, 76, 141) !important;
     width: 100%;
     padding-right: 15px;
     padding-left: 25px;
 }
+
 .sidebar {
     background-color: rgb(209, 196, 233) !important;
     text-decoration: none;
     color: #152238;
     width: 250px;
     padding: 20px;
-    position: fixed; 
-    top: 60px; 
-    right: 0; 
-    right:0;
-    bottom: 0; 
-    overflow-y: auto; 
+    position: fixed;
+    top: 60px;
+    right: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
     text-align: center;
 }
 
@@ -80,23 +93,23 @@ h1 {
     height: auto;
     right: 80px;
     top: 18px;
-    color:  #152238 !important;
+    color: #152238 !important;
     background-color: transparent !important;
     border: none;
-    
+
 }
 
 .toggle-btn .bi {
-    font-size:25px; 
-    font-weight: bold; 
+    font-size: 25px;
+    font-weight: bold;
 }
 
-.navbar-
-form textarea#post {
+.navbar- form textarea#post {
     width: 60vw;
     height: 40vh;
     max-width: 60vw;
 }
+
 select {
     outline: none;
     border: none;
@@ -107,6 +120,7 @@ select {
     height: 2em;
     width: auto;
 }
+
 .new_post_page {
     text-align: center;
     width: 80vw;
@@ -118,60 +132,71 @@ select {
     margin-left: 5vw;
     width: auto;
 }
+
 .comment_submit {
     margin-left: 10vw;
 }
+
 .delete_comment {
-    background-color: #152238 0.544;
     border-radius: 5px;
     margin-left: 10vw;
 }
+
 .edit_comment {
-    background-color: #152238 0.544;
     border-radius: 5px;
     margin-left: 5vw;
 }
+
 .greeting {
     text-align: center;
 }
+
 div.sign_in {
     margin-left: 25vw;
     height: min-content;
     text-align: center;
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
-    margin-top:2.5vh;
+    margin-top: 2.5vh;
     margin-bottom: 2.5vh;
     padding: 5vh;
     max-width: fit-content;
 }
+
 p.username_area {
     font-size: large;
 }
+
 p.password_area {
     font-size: large;
 }
+
 table.profile_page {
     text-align: center;
     width: 50vw;
 }
+
 img.profile_pic {
     border-radius: 40px;
     box-shadow: 0 0 8px rgba(76, 76, 141);
 }
+
 .page_image {
-    margin-left: 38vw; 
-    width: 5vh; 
+    margin-left: 38vw;
+    width: 5vh;
     padding-top: 3em;
     transition: 0.3s;
 }
+
 .page_image:hover {
     width: 6vh;
 }
+
 #login {
-    align-items: right !important;
+    align-items: end !important;
 }
-td.edit_profile > p {
+
+td.edit_profile>p {
     background-color: rgba(76, 76, 141, 0.544);
     border-radius: 10px;
     max-height: min-content;
@@ -181,6 +206,7 @@ td.edit_profile > p {
     margin-top: 30vh;
     width: 60vw;
 }
+
 .poster_name {
     font-weight: bold;
     text-decoration: none;
@@ -194,9 +220,11 @@ td.edit_profile > p {
     padding-right: 1.3em;
     border-radius: 10px 0 0 10px;
 }
+
 .poster_name:hover {
     text-decoration: underline solid;
 }
+
 .about_me {
     box-shadow: 0 0 8px rgba(76, 76, 141);
     border-radius: 10px;
@@ -206,10 +234,12 @@ td.edit_profile > p {
     margin-left: 10px;
     width: 55vw;
 }
+
 .edit_profile_page {
     text-align: center;
     width: 80vw;
 }
+
 .post_body {
     border: rgba(76, 76, 141) solid 0.2em;
     border-radius: 0 10px 10px 0;
@@ -220,9 +250,11 @@ td.edit_profile > p {
     padding-left: 1em;
     padding-right: 2em;
 }
+
 .post_body:hover {
     box-shadow: 0 0 8px rgba(76, 76, 141);
 }
+
 .comment {
     margin-left: 12vw;
     width: 60vw;
@@ -232,19 +264,23 @@ td.edit_profile > p {
     padding: 5vh;
     padding-top: 2vh;
 }
+
 .comment:hover {
     box-shadow: 0 0 10px rgba(76, 76, 141);
     border: solid rgba(76, 76, 141);
 }
+
 .commenter {
     margin-left: 10vw;
     font-weight: bold;
 }
+
 .replies_heading {
     font-weight: bolder;
     color: rgb(76, 76, 141);
     margin-top: 10vh;
 }
+
 .submit {
     background-color: rgb(76, 76, 141);
     border-radius: 10px;
@@ -253,6 +289,7 @@ td.edit_profile > p {
     padding: 2vh;
     transition: transform 0.1s ease;
 }
+
 #filter-submit {
     outline: none;
     border: none;
