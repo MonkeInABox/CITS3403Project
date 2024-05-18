@@ -24,7 +24,7 @@ a:hover {
 }
 
 .nav-log {
-    padding-left: 42vw !important;
+    align-self:flex-end !important;
 }
 
 .search_bar {
