@@ -1,6 +1,10 @@
 {% extends "heading.html" %}
 
 {% block content %}
+    {% if search_data %}
+        <h2> Search results for: {{ search_data }} </h2>
+        <br>
+    {% endif %}
     <form action="{{ url_for('main.filter_posts') }}" method = "post">
         {{ filter_form.hidden_tag() }}
         <p style="padding-left:5vw"> 

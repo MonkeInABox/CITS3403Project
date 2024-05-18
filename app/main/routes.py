@@ -25,6 +25,7 @@ def before_request():
 def _handle_comments_and_filters(category=None):
     comment_form = PostNewComment()
     filter_form = FilterForm()
+    search_form = SearchForm()
     query = 0
     filter_value = 0
 
@@ -41,20 +42,25 @@ def _handle_comments_and_filters(category=None):
         return jsonify(errors=comment_form.errors), 400  # Return 400 if post not found
 
     filter_data = request.args.get('filter')
+    search_data = request.args.get('search_term')
     if filter_data:
         # Set cookie if filter_data exists
         response = make_response("Filter data set!")
         response.set_cookie('filter', filter_data)
         filter_value = filter_data
-        query = build_query(filter_data, category)
+        if search_data:
+            query = build_query(filter_data, category, search_data)
+        else:
+            query = build_query(filter_data, category, search_data)
     else:
         # If cookie exists
         filter_value = request.cookies.get('filter')
         if filter_value:
-            query = build_query(filter_value, category)
+            query = build_query(filter_value, category, search_data)
         else:
-            query = build_query(filter_value, category)
-            filter_value = 'nwst'   
+            filter_value = 'nwst'
+            query = build_query(filter_value, category, search_data)
+               
 
     # Handle pagination and query for posts as usual
     page = request.args.get('page', 1, type=int)
@@ -65,6 +71,8 @@ def _handle_comments_and_filters(category=None):
 
     return {
         'comment_form': comment_form,
+        'search_form': search_form,
+        'search_data': search_data,
         'filter_form': filter_form,
         'filter_value': filter_value,
         'posts': posts.items,
@@ -102,7 +110,7 @@ def filter_posts():
         # Handle validation errors
         return redirect(url_for('main.index'))
 
-def build_query(filter_data, category=None):
+def build_query(filter_data, category=None, search_term=None):
     # Base query without category filter
     if filter_data == "nwst":
         query = sa.select(Post).order_by(Post.timestamp.desc())
@@ -121,7 +129,9 @@ def build_query(filter_data, category=None):
     if category:
         query = query.filter(Post.category == category)
 
-        
+    if search_term:
+        query = query.filter(Post.body.like('%' + search_term + '%'))
+   
     return query
 
 # Main profile page 
@@ -173,25 +183,22 @@ def edit_profile():
 #Search Page
 @bp.route('/search', methods=['GET','POST'])
 def search():
-    form = SearchForm()
-    if form.validate_on_submit():
-        search_term = form.searched.data
-    page = request.args.get('page', 1, type=int)
-
-    query = sa.select(Post).filter(Post.body.like('%' + search_term + '%')).order_by(Post.timestamp.desc())
-    posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
-
-    if posts.has_next:
-        next_url = url_for('main.search', page=posts.next_num)
+    search_form = SearchForm(request.form)
+    if search_form.validate_on_submit():
+        search_data = search_form.searched.data
+        
+        # Extract the current path from the referrer URL
+        referrer = request.referrer
+        parsed_url = urlparse(referrer)
+        current_path = parsed_url.path
+        
+        # Build the new URL with the filter query parameter
+        new_url = urljoin(referrer, f"{current_path}?search_term={search_data}")
+        
+        return redirect(new_url)
     else:
-        next_url = None
-
-    if posts.has_prev:
-        prev_url = url_for('main.search', page=posts.prev_num)
-    else:
-        prev_url = None
-
-    return render_template('search.html', title='Search', form = form, search_term = search_term, posts = posts.items, next_url = next_url, prev_url = prev_url)
+        # Handle validation errors
+        return redirect(url_for('main.index'))
 
 @bp.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -237,7 +244,6 @@ def like_or_dislike(post_id, like_type, medium):
     
     db.session.commit()
 
-    
     if medium == "post":
         like_count = len(post.likes) - len(post.dislikes)
         return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})
