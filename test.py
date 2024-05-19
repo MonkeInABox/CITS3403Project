@@ -44,7 +44,7 @@ class UserModelCase(unittest.TestCase):
             self.current_user.set_password('test')  # Set a password if needed
             db.session.add(self.current_user)
             db.session.commit()
-         if self._testMethodName not in ['test_user_registration']:
+        if self._testMethodName not in ['test_user_registration']:
             self.login()
 
             # Log in the user
