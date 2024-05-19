@@ -4,6 +4,10 @@ from app import create_app, db
 from app.models import User, Post, Comment
 from config import Config
 from app.posts.forms import PostNewPost
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 class TestConfig(Config):
     TESTING = True
@@ -50,6 +54,37 @@ class UserModelCase(unittest.TestCase):
         self.app.post('/submit_comment', body = comment_body, author_id = comment_u.id, post_id = post_id)
         comment = db.select(Post).join(Comment).group_by(Post.id).filter_by(author_id=comment_u.id)
         self.assertTrue(comment is not None)
+
+    def test_categories(self):
+        post_u = User(id = 24)
+        self.app.post('/newpost', body = "any movies with Harrison Ford?", user_id = post_u.id, category = "film")
+        self.app.post('/newpost', body = "any video games with Harrison Ford?", user_id = post_u.id, category = "vdga")
+        self.app.post('/newpost', body = "any books with Harrison Ford?", user_id = post_u.id, category = "book")
+        self.app.post('/newpost', body = "any music with Harrison Ford?", user_id = post_u.id, category = "musc")
+        self.app.post('/newpost', body = "any tv shows with Harrison Ford?", user_id = post_u.id, category = "tvsh")
+        print(self.app.get('categories/film'))
+
+localHost = "http://localhost:5000"
+
+class SeleniumTests(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+
+        self.server_thread = multiprocessing.Process(target=self.testApp.run)
+        self.server_thread.start()
+
+        self.driver = webdriver.Chrome()
+        self.driver.get(localHost)
+
+    def tearDown(self):
+        self.server_thread.terminate()
+        self.driver.close()
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
 
         
 if __name__ == '__main__':
