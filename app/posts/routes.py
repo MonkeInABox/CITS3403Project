@@ -84,7 +84,11 @@ def check_updates():
     page = request.args.get('page', 1, type=int)
     category = request.args.get('category', None, type=str)
     filter_data = request.args.get('filter')
-    posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data, current_app.config['CATEGORIES'][category])
+    search_term = request.args.get('search_term')
+    if category != 'undefined':
+        posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data, current_app.config['CATEGORIES'][category], search_term)
+    else:
+        posts_with_comment_status = Post.get_posts_with_comment_status(page, filter_data, None, search_term)
     
     # Convert the result to a list of dictionaries
     print(posts_with_comment_status)
