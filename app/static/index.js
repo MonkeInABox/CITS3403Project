@@ -215,7 +215,6 @@ function handleNewCommentInput(postId) {
     })
         .then(response => {
             if (response.ok) {
-                console.log('Comment Submitted');
                 // Clear the comment input field
                 document.getElementById(`comment-form-${postId}`).reset();
                 // Display flash message
@@ -226,7 +225,6 @@ function handleNewCommentInput(postId) {
                 }, 3000);
                 // Update comment button visibility
                 const button = document.getElementById(`toggle-comments-button-${postId}`);
-                console.log(button)
                 button.style.display = ''; // Show button
             }
             else if (response.status === 400) {
@@ -252,31 +250,25 @@ function handleNewCommentInput(postId) {
 
 
 function pollForUpdates() {
-    console.log('test');
     setInterval(() => {
         const urlParams = new URLSearchParams(window.location.search);
         var page = urlParams.get('page');
         var filter = urlParams.get('filter')
         var search_term = urlParams.get('search_term')
         var category = window.location.pathname.split('/').filter(Boolean)[1];
-        console.log(category)
         fetch(`/check_updates?page=${page}&filter=${filter}&category=${category}&search_term=${search_term}`) // Replace '/check_updates' with the appropriate route to check for updates
             .then(response => {
                 if (response.ok) {
-                    console.log(response);
                     return response.json();
                 } else {
                     throw new Error('Network response was not ok');
                 }
             })
             .then(data => {
-                console.log(data)
                 // Update comment button visibility for each post
                 data.forEach(postId => {
-                    console.log(postId)
                     var button = document.getElementById(`toggle-comments-button-${postId}`);
                     if (postId > 0) {
-                        console.log("has comments");
                         loadComments(postId)
                         button.style.display = ''; // Show button
                     } else {
