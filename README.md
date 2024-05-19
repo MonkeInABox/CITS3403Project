@@ -33,6 +33,11 @@ Enter: `flask run`
 You will now see the CMD window for the web server up and running!  
 Most likely it will be hosted on 127.0.0.1:5000 
 
+**If app.db is missing**  
+Enter: `flask db init`  
+Enter: `flask db migrate`  
+Enter: `flask db upgrade` 
+
 ## Testing
 
 To test this project:
@@ -42,11 +47,6 @@ Enter: `python -m unittest test.py`
 
 *Issues* may arise if the `chromedriver.exe` file is not the same version as your chromium
 tester.
-
-**If app.db is missing**  
-Enter: `flask db init`  
-Enter: `flask db migrate`  
-Enter: `flask db upgrade` 
 
 
 
