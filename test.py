@@ -2,7 +2,7 @@
 import unittest
 import multiprocessing
 from app import create_app, db
-from flask import current_app
+from flask import url_for
 from app.models import User, Post, Comment, Like, Dislike
 from config import Config
 from app.posts.forms import PostNewPost
@@ -114,7 +114,7 @@ class UserModelCase(unittest.TestCase):
             post6 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
             post7 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
             post8 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
-            post9 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            post9 = Post(body="What's a good movie with Justin Timberlake?", category='film', user_id=self.current_user.id)
             db.session.add(post1)
             db.session.commit()
             db.session.add(post2)
@@ -160,24 +160,28 @@ class UserModelCase(unittest.TestCase):
         # THIS IS BECAUSE EVERYTHING REFERENCES THE CONFIGURATION FILE WITH CATEGORIES
 
         # Get every post (also newest check)
-        result = Post.get_posts_with_comment_status(1, "null", None)
+        result = Post.get_posts_with_comment_status(1, "null", None, None)
         self.assertEqual(result, [-9, 8, 7, -6, 5, -4, 3, -2, 1])
 
         # Get every film post (another newest check)
-        result = Post.get_posts_with_comment_status(1, "null", 'film')
+        result = Post.get_posts_with_comment_status(1, "nwst", 'film', None)
         self.assertEqual(result, [-9, 7, -6, -4, 3, 1])
 
         # Check latest
-        result = Post.get_posts_with_comment_status(1, "ldst", 'film')
-        self.assertEqual(result, [3, -4, -6, 7, -9])
+        result = Post.get_posts_with_comment_status(1, "ldst", 'film', None)
+        self.assertEqual(result, [-9, 7, -6, -4, 3, 1])
 
         # Check likes
-        result = Post.get_posts_with_comment_status(1, "mslk", None)
+        result = Post.get_posts_with_comment_status(1, "mslk", None, None)
         self.assertEqual(result, [1, -2])
 
         # Check dislikes
-        result = Post.get_posts_with_comment_status(1, "msdk", None)
+        result = Post.get_posts_with_comment_status(1, "msdk", None, None)
         self.assertEqual(result, [1, -2])
+
+        # Check search term
+        result = Post.get_posts_with_comment_status(1, "null", "film", "Timberlake")
+        self.assertEqual(result, [-9])
 
     def test_likes(self):
         with self.app_context:

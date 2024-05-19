@@ -91,7 +91,6 @@ class Post(db.Model):
         
         # Determine start and end post IDs based on page number and posts per page
         if filterType == "nwst" or filterType == "null":
-            print("Newest")
             start_post_id = db.session.query(Post).count() - (pageNum * posts_per_page) + 1
             query = (
                 db.session.query(Post.id, sa.exists().where(Comment.post_id == Post.id).label('has_comments'))
@@ -99,7 +98,6 @@ class Post(db.Model):
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
             if search_term != "null" and search_term is not None:
-                print(search_term)
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
             # Apply ordering by timestamp descending
@@ -125,7 +123,6 @@ class Post(db.Model):
 
             # Apply limit and offset for pagination
             query = query.limit(posts_per_page).offset(start_post_id)
-            print(query)
         elif filterType == "mslk":
             start_post_id = (pageNum - 1) * posts_per_page
             query = (
