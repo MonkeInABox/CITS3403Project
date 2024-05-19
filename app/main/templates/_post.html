@@ -12,7 +12,7 @@
             </a>
         </span>
         <span style="display: inline-block;" class="post_body">
-            {{ post.body }}postid: {{ post.id }} postauthorid: {{ post.author.id }}
+            {{ post.body }}
         </span>
         <br>
         {% if current_user is none or current_user.id == post.author.id %}
