@@ -121,9 +121,9 @@ class UserModelCase(unittest.TestCase):
 
             comment1 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post1.id)
             comment2 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post3.id)
-            comment3 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post5.id)
-            comment4 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post7.id)
-            comment5 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post8.id)
+            comment3 = Comment(body="Harrison test 3", author_id=self.current_user.id, post_id=post5.id)
+            comment4 = Comment(body="Harrison test 4", author_id=self.current_user.id, post_id=post7.id)
+            comment5 = Comment(body="Harrison test 5", author_id=self.current_user.id, post_id=post8.id)
             db.session.add(comment1)
             db.session.add(comment2)
             db.session.add(comment3)
@@ -132,9 +132,13 @@ class UserModelCase(unittest.TestCase):
             db.session.commit()
 
             like1 = Like(author_id=self.current_user.id, post_id=post1.id)
+            like2 = Like(author_id=self.current_user.id, post_id=post2.id)
             dislike1 = Dislike(author_id=self.current_user.id, post_id=post1.id)
+            dislike2 = Dislike(author_id=self.current_user.id, post_id=post2.id)
             db.session.add(like1)
             db.session.add(dislike1)
+            db.session.add(like2)
+            db.session.add(dislike2)
             db.session.commit()
             
         # FOR ALL CHECKS I ONLY NEED TO CHECK ONE CATEGORY
@@ -153,12 +157,14 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(result, [3, -4, -6, 7, -9])
 
         # Check likes
-        result = Post.get_posts_with_comment_status(1, "mslk", 'film')
-        self.assertEqual(result, [1])
+        result = Post.get_posts_with_comment_status(1, "mslk", None)
+        print(result)
+        self.assertEqual(result, [1, -2])
 
         # Check dislikes
-        result = Post.get_posts_with_comment_status(1, "msdk", 'film')
-        self.assertEqual(result, [1])
+        result = Post.get_posts_with_comment_status(1, "msdk", None)
+        print(result)
+        self.assertEqual(result, [1, -2])
 
 
 
