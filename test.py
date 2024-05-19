@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import unittest
+
+from flask import url_for
 import multiprocessing
 from app import create_app, db
 from flask import current_app
@@ -42,13 +44,15 @@ class UserModelCase(unittest.TestCase):
             self.current_user.set_password('test')  # Set a password if needed
             db.session.add(self.current_user)
             db.session.commit()
+         if self._testMethodName not in ['test_user_registration']:
+            self.login()
 
             # Log in the user
             with self.client.session_transaction() as session:
                 session['_user_id'] = str(self.current_user.id)
 
     def login(self):
-        self.client.post(url_for('auth.login'), data={
+        response = self.client.post(url_for('auth.login'), data={
             'username': 'testuser',
             'password': 'password'
         })
@@ -64,7 +68,31 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(u.avatar(128), ('https://www.gravatar.com/avatar/'
                                          'd4c74594d841139328695756648b6bd6'
                                          '?d=identicon&s=128'))
-    
+        
+    def test_user_registration(self):
+        response = self.client.post('/register', data={
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password': 'password',
+            'password2': 'password'
+        })
+        user = User.query.filter_by(username='newuser').first()
+        self.assertIsNotNone(user) 
+        self.assertEqual(user.username, 'newuser')
+
+    def test_edit_profile(self):
+        response = self.client.post('/edit_profile', data={
+             'about_me': 'This is testing the about me.'
+        })
+        user = User.query.filter_by(username='testuser').first()
+        self.assertIsNotNone(user)
+        self.assertEqual(user.about_me,'This is testing the about me.')   
+
+    def test_logout(self):
+        response = self.client.get(url_for('auth.logout'))
+        response = self.client.get(url_for('main.profile', username='testuser'))
+        self.assertIn(b'Login', response.data)
+
     def test_post(self):
             post_data = {
                 'body': "I love Harrison Ford, what's a good movie with him in it?",
@@ -253,6 +281,6 @@ class SeleniumTests(unittest.TestCase):
     def tearDown(self):
         self.driver.quit()
 
-        
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
