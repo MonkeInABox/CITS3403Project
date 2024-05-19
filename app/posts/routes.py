@@ -43,7 +43,6 @@ def categories(category):
     if isinstance(result, tuple) and result[1] == 400:
         return result
 
-    print(result)
     return render_template('index.html', title=category, **result)
 
 # Edit a post

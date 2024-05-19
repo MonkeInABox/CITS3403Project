@@ -2,7 +2,8 @@
 import unittest
 import multiprocessing
 from app import create_app, db
-from app.models import User, Post, Comment
+from flask import current_app
+from app.models import User, Post, Comment, Like, Dislike
 from config import Config
 from app.posts.forms import PostNewPost
 from selenium import webdriver
@@ -20,25 +21,31 @@ class TestConfig(Config):
     SERVER_NAME = 'localhost'  # Setting SERVER_NAME for URL building
     APPLICATION_ROOT = '/'     # Application root
     PREFERRED_URL_SCHEME = 'http'  # Preferred URL scheme
+    WTF_CSRF_ENABLED = False  # Disable CSRF for testing
+    RECAPTCHA_USE_SSL = False
+    RECAPTCHA_PUBLIC_KEY = 'test'
+    RECAPTCHA_PRIVATE_KEY = 'test'
+    RECAPTCHA_OPTIONS = {'theme': 'white'}
+
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
         self.app_context.push()
-        db.create_all()
+        with self.app_context:
+            db.create_all()
         self.client = self.app.test_client()
 
-        self.user = User(username='testuser', email='test@example.com')
-        self.user.set_password('password')
-        db.session.add(self.user)
-        db.session.commit()
-        self.login()
+        with self.app_context:
+            self.current_user = User(id=1, username="test", email="test@example.com")
+            self.current_user.set_password('test')  # Set a password if needed
+            db.session.add(self.current_user)
+            db.session.commit()
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+            # Log in the user
+            with self.client.session_transaction() as session:
+                session['_user_id'] = str(self.current_user.id)
 
     def login(self):
         self.client.post(url_for('auth.login'), data={
@@ -59,13 +66,150 @@ class UserModelCase(unittest.TestCase):
                                          '?d=identicon&s=128'))
     
     def test_post(self):
-        u = User(id = 24)
-        post_body = "I love Harrison Ford, what's a good movie with him in it?"
-        self.app.post('/newpost', body = post_body, user_id = u.id)
-        post = db.select(Post).filter_by(user_id=u.id)
-        self.assertTrue(post is not None)
-    
+            post_data = {
+                'body': "I love Harrison Ford, what's a good movie with him in it?",
+                'category': 'film'
+            }
+            
+            # Make the POST request to create a new post
+            result = self.client.post('/newpost', data=post_data)
+
+            # Check that the POST request was successful (redirect status code 302)
+            self.assertEqual(result.status_code, 302)
+
+            # Verify the post has been created in the database
+            with self.app_context:
+                post = db.session.query(Post).filter_by(category='film').first()
+                self.assertIsNotNone(post)
+                self.assertEqual(post.body, "I love Harrison Ford, what's a good movie with him in it?")
+                self.assertEqual(post.user_id, self.current_user.id)
+
     def test_comment(self):
+        with self.app_context:
+            post = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            db.session.add(post)
+            db.session.commit()
+
+        comment_data = {
+            'body': "I also love Harrison Ford!"
+        }
+
+        result = self.client.post(f'/submit_comment/{post.id}', data=comment_data)
+
+        self.assertEqual(result.status_code, 200)
+
+        with self.app_context:
+            comment = db.session.query(Comment).filter_by(post_id=post.id).first()
+            self.assertIsNotNone(comment)
+            self.assertEqual(comment.body, "I also love Harrison Ford!")
+            self.assertEqual(comment.author_id, self.current_user.id)
+
+    def test_comment_filter(self):
+        with self.app_context:
+            post1 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post2 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
+            post3 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            post4 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post5 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
+            post6 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            post7 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post8 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
+            post9 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            db.session.add(post1)
+            db.session.commit()
+            db.session.add(post2)
+            db.session.commit()
+            db.session.add(post3) # I need to commit after every one as the timestamps are needed
+            db.session.commit()
+            db.session.add(post4)
+            db.session.commit()
+            db.session.add(post5)
+            db.session.commit()
+            db.session.add(post6)
+            db.session.commit()
+            db.session.add(post7)
+            db.session.commit()
+            db.session.add(post8)
+            db.session.commit()
+            db.session.add(post9)
+            db.session.commit()
+
+            comment1 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post1.id)
+            comment2 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post3.id)
+            comment3 = Comment(body="Harrison test 3", author_id=self.current_user.id, post_id=post5.id)
+            comment4 = Comment(body="Harrison test 4", author_id=self.current_user.id, post_id=post7.id)
+            comment5 = Comment(body="Harrison test 5", author_id=self.current_user.id, post_id=post8.id)
+            db.session.add(comment1)
+            db.session.add(comment2)
+            db.session.add(comment3)
+            db.session.add(comment4) # Not needed timestamps
+            db.session.add(comment5)
+            db.session.commit()
+
+            like1 = Like(author_id=self.current_user.id, post_id=post1.id)
+            like2 = Like(author_id=self.current_user.id, post_id=post2.id)
+            dislike1 = Dislike(author_id=self.current_user.id, post_id=post1.id)
+            dislike2 = Dislike(author_id=self.current_user.id, post_id=post2.id)
+            db.session.add(like1)
+            db.session.add(dislike1)
+            db.session.add(like2)
+            db.session.add(dislike2)
+            db.session.commit()
+            
+        # FOR ALL CHECKS I ONLY NEED TO CHECK ONE CATEGORY
+        # THIS IS BECAUSE EVERYTHING REFERENCES THE CONFIGURATION FILE WITH CATEGORIES
+
+        # Get every post (also newest check)
+        result = Post.get_posts_with_comment_status(1, "null", None)
+        self.assertEqual(result, [-9, 8, 7, -6, 5, -4, 3, -2, 1])
+
+        # Get every film post (another newest check)
+        result = Post.get_posts_with_comment_status(1, "null", 'film')
+        self.assertEqual(result, [-9, 7, -6, -4, 3, 1])
+
+        # Check latest
+        result = Post.get_posts_with_comment_status(1, "ldst", 'film')
+        self.assertEqual(result, [3, -4, -6, 7, -9])
+
+        # Check likes
+        result = Post.get_posts_with_comment_status(1, "mslk", None)
+        print(result)
+        self.assertEqual(result, [1, -2])
+
+        # Check dislikes
+        result = Post.get_posts_with_comment_status(1, "msdk", None)
+        print(result)
+        self.assertEqual(result, [1, -2])
+
+    def test_likes(self):
+        with self.app_context:
+            post = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post1 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            comment = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post.id)
+            comment1 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post.id)
+            db.session.add(post)
+            db.session.add(comment)
+            db.session.add(post1)
+            db.session.add(comment1)
+            db.session.commit()
+
+        result = self.client.post(f'/like/2/like/post')
+        self.assertEqual(result.status_code, 200)
+
+        result = self.client.post(f'/like/2/like/comment')
+        self.assertEqual(result.status_code, 200)
+
+        like = Like.query.filter_by(author_id = self.current_user.id, post_id = post1.id).first()
+        self.assertEqual(like.author_id, self.current_user.id)
+
+        result = self.client.post(f'/like/2/dislike/post')
+        self.assertEqual(result.status_code, 200)
+
+        result = self.client.post(f'/like/2/dislike/comment')
+        self.assertEqual(result.status_code, 200)
+
+        like = Dislike.query.filter_by(author_id = self.current_user.id, post_id = post1.id).first()
+        self.assertEqual(like.author_id, self.current_user.id)
         post_u = User(id = 24)
         comment_u = User(id = 38)
         post_id = 4
