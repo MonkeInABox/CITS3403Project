@@ -72,6 +72,7 @@ class UserModelCase(unittest.TestCase):
 localHost = "http://localhost:5000/"
 
 class SeleniumTests(unittest.TestCase):
+    localHost = "http://localhost:5000/"
     def setUp(self):
         self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
@@ -81,9 +82,9 @@ class SeleniumTests(unittest.TestCase):
         self.server_thread = multiprocessing.Process(target=self.app.run)
         self.server_thread.start()
         try:
-            service = ChromeService(executable_path='/chrome-win64/chrome.exe')  # Adjust path as needed
+            service = ChromeService(executable_path='./chromedriver.exe')
             self.driver = webdriver.Chrome(service=service)
-            self.driver.get('http://localhost:5000')
+            self.driver.get('http://localhost:5000') 
         except Exception as e:
             self.tearDown()
             raise RuntimeError("WebDriver initialization failed") from e
