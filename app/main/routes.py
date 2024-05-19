@@ -135,9 +135,8 @@ def build_query(filter_data, category=None, search_term=None):
     if category:
         query = query.filter(Post.category == category)
 
-    print(f"search term is {search_term}")
+    # Add search filter is search_term is not None
     if search_term:
-        print("SEARCH TERMMMMMMMMM")
         query = query.filter(Post.body.like('%' + search_term + '%'))
    
     return query
@@ -229,9 +228,11 @@ def delete_user(user_id):
         return redirect(url_for('main.index'))
     return render_template('delete_user.html', form=form, user=user)
 
+# Like or Dislike a post
 @bp.route('/like/<post_id>/<like_type>/<medium>', methods=['POST'])
 @login_required
 def like_or_dislike(post_id, like_type, medium):
+    # Sets variables dependent on whether the like/dislike is on a comment or post
     if medium == "post":
         post = Post.query.filter_by(id = post_id).first()
         like = Like.query.filter_by(author_id = current_user.id, post_id = post_id).first()
@@ -241,6 +242,8 @@ def like_or_dislike(post_id, like_type, medium):
         like = Like.query.filter_by(author_id = current_user.id, comment_id = post_id).first()
         dislike = Dislike.query.filter_by(author_id = current_user.id, comment_id = post_id).first()
     
+    # If a like exists, database is updated appropriately so that a user
+    # cannot like the same post/comment twice. If a like doesn't exist, one is added.
     if like:
         db.session.delete(like)
     elif like_type == "like" and medium == "post":
@@ -250,6 +253,8 @@ def like_or_dislike(post_id, like_type, medium):
         like = Like(author_id = current_user.id, comment_id = post_id)
         db.session.add(like)
     
+    # If a dislike exists, database is updated appropriately so that a user
+    # cannot dislike the same post/comment twice. If a like doesn't exist, one is added.
     if dislike:
         db.session.delete(dislike)
     elif like_type == "dislike" and medium == "post":
@@ -259,8 +264,10 @@ def like_or_dislike(post_id, like_type, medium):
         dislike = Dislike(author_id = current_user.id, comment_id = post_id)
         db.session.add(dislike)
     
+    # Changes are comitted to database
     db.session.commit()
 
+    # Data is sent to javascript depending on if the like/dislike is for a post or comment
     if medium == "post":
         like_count = len(post.likes) - len(post.dislikes)
         return jsonify({"likes": like_count, "liked": current_user.id in map(lambda x: x.author_id, post.likes), "disliked": current_user.id in map(lambda x: x.author_id, post.dislikes)})

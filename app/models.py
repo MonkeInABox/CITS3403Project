@@ -11,6 +11,7 @@ from hashlib import md5
 from app import db
 from itsdangerous import URLSafeTimedSerializer
 
+# User model
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -55,8 +56,7 @@ class User(UserMixin, db.Model):
         except Exception:
             return None
         
-    
-
+# Post model
 class Post(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -83,12 +83,6 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
-    
-    def get_posts_by_cat(category):
-        page = request.args.get('page', 1, type=int)
-        query = sa.select(Post).filter_by(category=category).order_by(Post.timestamp.desc())
-        posts = db.paginate(query, page=page, per_page=current_app.config['POSTS_PER_PAGE'], error_out=False)
-        return posts
     
     def get_posts_with_comment_status(pageNum, filterType, category, search_term):
         # Calculate range of post IDs for the given page number
@@ -175,7 +169,8 @@ class Post(db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
-    
+
+# Comment model
 class Comment(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -198,6 +193,7 @@ class Comment(db.Model):
         self.author_id = author_id
         self.post_id = post_id
 
+# Like model
 class Like(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -213,7 +209,7 @@ class Like(db.Model):
 
     original_comment = db.relationship('Comment', back_populates='likes')
 
-
+#Dislike model
 class Dislike(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
