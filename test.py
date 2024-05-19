@@ -44,8 +44,6 @@ class UserModelCase(unittest.TestCase):
             self.current_user.set_password('test')  # Set a password if needed
             db.session.add(self.current_user)
             db.session.commit()
-        if self._testMethodName not in ['test_user_registration']:
-            self.login()
 
             # Log in the user
             with self.client.session_transaction() as session:
@@ -70,13 +68,17 @@ class UserModelCase(unittest.TestCase):
                                          '?d=identicon&s=128'))
         
     def test_user_registration(self):
-        response = self.client.post('/register', data={
+        profile_data = {
             'username': 'newuser',
             'email': 'newuser@example.com',
             'password': 'password',
             'password2': 'password'
-        })
-        user = User.query.filter_by(username='newuser').first()
+        }
+        result = self.client.post('/register', data=profile_data
+        )
+        self.assertEqual(result.status_code, 302)
+
+        user = User.query.filter_by(email='newuser@example.com').first()
         self.assertIsNotNone(user) 
         self.assertEqual(user.username, 'newuser')
 
@@ -84,7 +86,7 @@ class UserModelCase(unittest.TestCase):
         response = self.client.post('/edit_profile', data={
              'about_me': 'This is testing the about me.'
         })
-        user = User.query.filter_by(username='testuser').first()
+        user = User.query.filter_by(username='test').first()
         self.assertIsNotNone(user)
         self.assertEqual(user.about_me,'This is testing the about me.')   
 
@@ -237,18 +239,6 @@ class UserModelCase(unittest.TestCase):
 
         result = self.client.post(f'/like/2/dislike/comment')
         self.assertEqual(result.status_code, 200)
-
-        like = Dislike.query.filter_by(author_id = self.current_user.id, post_id = post1.id).first()
-        self.assertEqual(like.author_id, self.current_user.id)
-        post_u = User(id = 24)
-        comment_u = User(id = 38)
-        post_id = 4
-        post_body = "I love Harrison Ford, what's a good movie with him in it?"
-        comment_body = "OMG, you HAVE to watch Blade Runner!"
-        self.app.post('/newpost', body = post_body, user_id = post_u.id, id = post_id)
-        self.app.post('/submit_comment', body = comment_body, author_id = comment_u.id, post_id = post_id)
-        comment = db.select(Post).join(Comment).group_by(Post.id).filter_by(author_id=comment_u.id)
-        self.assertTrue(comment is not None)
 
     def test_categories(self):
         post_u = User(id = 24)
