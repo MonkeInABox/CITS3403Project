@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 import unittest
+import multiprocessing
 from app import create_app, db
 from app.models import User, Post, Comment
 from config import Config
 from app.posts.forms import PostNewPost
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support import expected_conditions as EC
+import time
 
 
 class TestConfig(Config):
@@ -64,7 +69,7 @@ class UserModelCase(unittest.TestCase):
         self.app.post('/newpost', body = "any tv shows with Harrison Ford?", user_id = post_u.id, category = "tvsh")
         print(self.app.get('categories/film'))
 
-localHost = "http://localhost:5000"
+localHost = "http://localhost:5000/"
 
 class SeleniumTests(unittest.TestCase):
     def setUp(self):
@@ -73,15 +78,33 @@ class SeleniumTests(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-        self.server_thread = multiprocessing.Process(target=self.testApp.run)
+        self.server_thread = multiprocessing.Process(target=self.app.run)
         self.server_thread.start()
-
-        self.driver = webdriver.Chrome()
+        try:
+            service = ChromeService(executable_path='/chrome-win64/chrome.exe')  # Adjust path as needed
+            self.driver = webdriver.Chrome(service=service)
+            self.driver.get('http://localhost:5000')
+        except Exception as e:
+            self.tearDown()
+            raise RuntimeError("WebDriver initialization failed") from e
         self.driver.get(localHost)
+
+    def test_dropdown_filter(self):
+        post_u = User(id = 24)
+        self.driver.get(localHost)
+        wait = WebDriverWait(self.driver, 10)
+        self.app.post('/newpost', body = "any movies with Harrison Ford?", user_id = post_u.id, category = "film")
+        dropdown_element = wait.until(EC.presence_of_element_located((By.ID, 'search-filter')))
+        select = Select(dropdown_element)
+        select.select_by_visible_text('Newest')
+        wait.until(EC.text_to_be_present_in_element((By.ID, 'resultsId'), 'Expected Result'))  
+        posts = self.driver.find_elements(By.CLASS_NAME, 'post') 
+        self.assertGreater(len(posts), 0, "No posts found after filtering")
+        print("Test passed!")
 
     def tearDown(self):
         self.server_thread.terminate()
-        self.driver.close()
+        self.driver.quit()
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
