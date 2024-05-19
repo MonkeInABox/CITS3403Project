@@ -72,41 +72,21 @@ class UserModelCase(unittest.TestCase):
 localHost = "http://localhost:5000/"
 
 class SeleniumTests(unittest.TestCase):
-    localHost = "http://localhost:5000/"
     def setUp(self):
-        self.app = create_app(TestConfig)
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-        self.server_thread = multiprocessing.Process(target=self.app.run)
-        self.server_thread.start()
-        
         self.driver = webdriver.Chrome()
-        self.driver.get(localHost)
+        self.driver.maximize_window()
+        self.driver.get(localHost)  
 
-    def test_dropdown_filter(self):
-        self.driver.get(localHost)
-        wait = WebDriverWait(self.driver, 10)
-        dropdown_element = wait.until(EC.presence_of_element_located((By.ID, 'search-filter')))
-        select = Select(dropdown_element)
-        select.select_by_visible_text('Newest')  
-        posts = self.driver.find_elements(By.CLASS_NAME, 'posts') 
-        self.assertAlmostEqual(len(posts), 0, "No posts found after filtering")
-        select.select_by_visible_text('Oldest')  
-        posts = self.driver.find_elements(By.CLASS_NAME, 'posts') 
-        self.assertAlmostEqual(len(posts), 0, "No posts found after filtering")
-        select.select_by_visible_text('Most Liked')  
-        posts = self.driver.find_elements(By.CLASS_NAME, 'posts') 
-        self.assertAlmostEqual(len(posts), 0, "No posts found after filtering")
-        print("Test passed!")
+    def test_login_link(self):
+        login_link = self.driver.find_element(By.XPATH, "//a[@href='/login']")
+        login_link.click()
+
+        WebDriverWait(self.driver, 10).until(EC.url_contains("/login"))
+
+        self.assertIn("/login", self.driver.current_url)
 
     def tearDown(self):
-        self.server_thread.terminate()
-        self.driver.close()
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+        self.driver.quit()
 
         
 if __name__ == '__main__':
