@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import unittest
 from app import create_app, db, current_app
-from app.models import User, Post, Comment
+from app.models import User, Post, Comment, Like, Dislike
 from config import Config
 from app.posts.forms import PostNewPost
 #from selenium import webdriver, multiprocessing
@@ -130,24 +130,35 @@ class UserModelCase(unittest.TestCase):
             db.session.add(comment4) # Not needed timestamps
             db.session.add(comment5)
             db.session.commit()
+
+            like1 = Like(author_id=self.current_user.id, post_id=post1.id)
+            dislike1 = Dislike(author_id=self.current_user.id, post_id=post1.id)
+            db.session.add(like1)
+            db.session.add(dislike1)
+            db.session.commit()
             
         # FOR ALL CHECKS I ONLY NEED TO CHECK ONE CATEGORY
         # THIS IS BECAUSE EVERYTHING REFERENCES THE CONFIGURATION FILE WITH CATEGORIES
-        # Get every post
+
+        # Get every post (also newest check)
         result = Post.get_posts_with_comment_status(1, "null", None)
         self.assertEqual(result, [-9, 8, 7, -6, 5, -4, 3, -2, 1])
 
-        # Get every film post
+        # Get every film post (another newest check)
         result = Post.get_posts_with_comment_status(1, "null", 'film')
-        print(result)
         self.assertEqual(result, [-9, 7, -6, -4, 3, 1])
 
         # Check latest
         result = Post.get_posts_with_comment_status(1, "ldst", 'film')
         self.assertEqual(result, [3, -4, -6, 7, -9])
 
-        result = Post.get_posts_with_comment_status(1, "nwst", 'film')
-        self.assertEqual(result, [-3, 1])
+        # Check likes
+        result = Post.get_posts_with_comment_status(1, "mslk", 'film')
+        self.assertEqual(result, [1])
+
+        # Check dislikes
+        result = Post.get_posts_with_comment_status(1, "msdk", 'film')
+        self.assertEqual(result, [1])
 
 
 
