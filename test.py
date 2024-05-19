@@ -69,7 +69,7 @@ class UserModelCase(unittest.TestCase):
         self.app.post('/newpost', body = "any tv shows with Harrison Ford?", user_id = post_u.id, category = "tvsh")
         print(self.app.get('categories/film'))
 
-localHost = "http://localhost:5000/"
+localHost = "http://localhost:5000"
 
 class SeleniumTests(unittest.TestCase):
     def setUp(self):
@@ -80,10 +80,18 @@ class SeleniumTests(unittest.TestCase):
     def test_login_link(self):
         login_link = self.driver.find_element(By.XPATH, "//a[@href='/login']")
         login_link.click()
-
         WebDriverWait(self.driver, 10).until(EC.url_contains("/login"))
-
         self.assertIn("/login", self.driver.current_url)
+
+    def test_search(self):
+        search_input = self.driver.find_element(By.NAME, "searched")
+        search_query = "NO POST DATA"
+        search_input.send_keys(search_query)
+        search_button = self.driver.find_element(By.CLASS_NAME, "search_button")
+        search_button.click()
+        WebDriverWait(self.driver, 10).until(EC.url_contains("/?search_term=NO%20POST%20DATA"))
+        expected_url = "/?search_term=NO%20POST%20DATA"
+        self.assertIn(expected_url, self.driver.current_url)
 
     def tearDown(self):
         self.driver.quit()
