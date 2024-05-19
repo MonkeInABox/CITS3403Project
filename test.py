@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import unittest
-from app import create_app, db, current_app
+from app import create_app, db
+from flask import current_app
 from app.models import User, Post, Comment, Like, Dislike
 from config import Config
 from app.posts.forms import PostNewPost
@@ -166,7 +167,35 @@ class UserModelCase(unittest.TestCase):
         print(result)
         self.assertEqual(result, [1, -2])
 
+    def test_likes(self):
+        with self.app_context:
+            post = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post1 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            comment = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post.id)
+            comment1 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post.id)
+            db.session.add(post)
+            db.session.add(comment)
+            db.session.add(post1)
+            db.session.add(comment1)
+            db.session.commit()
 
+        result = self.client.post(f'/like/2/like/post')
+        self.assertEqual(result.status_code, 200)
+
+        result = self.client.post(f'/like/2/like/comment')
+        self.assertEqual(result.status_code, 200)
+
+        like = Like.query.filter_by(author_id = self.current_user.id, post_id = post1.id).first()
+        self.assertEqual(like.author_id, self.current_user.id)
+
+        result = self.client.post(f'/like/2/dislike/post')
+        self.assertEqual(result.status_code, 200)
+
+        result = self.client.post(f'/like/2/dislike/comment')
+        self.assertEqual(result.status_code, 200)
+
+        like = Dislike.query.filter_by(author_id = self.current_user.id, post_id = post1.id).first()
+        self.assertEqual(like.author_id, self.current_user.id)
 
     def tearDown(self):
         db.session.remove()
