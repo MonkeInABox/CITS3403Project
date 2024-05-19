@@ -38,7 +38,7 @@ class UserModelCase(unittest.TestCase):
         response = self.client.post(url_for('auth.login'), data={
             'username': 'testuser',
             'password': 'password'
-        }, follow_redirects=True)
+        })
 
     def test_password_hashing(self):
         u = User(username='testuser', email='testuser@example.com')
@@ -58,12 +58,23 @@ class UserModelCase(unittest.TestCase):
             'email': 'newuser@example.com',
             'password': 'password',
             'password2': 'password'
-        },follow_redirects=True)
+        })
         user = User.query.filter_by(username='newuser').first()
         self.assertIsNotNone(user) 
         self.assertEqual(user.username, 'newuser')
 
+    def test_edit_profile(self):
+        response = self.client.post('/edit_profile', data={
+             'about_me': 'This is testing the about me.'
+        })
+        user = User.query.filter_by(username='testuser').first()
+        self.assertIsNotNone(user)
+        self.assertEqual(user.about_me,'This is testing the about me.')   
 
-        
+    def test_logout(self):
+        response = self.client.get(url_for('auth.logout'))
+        response = self.client.get(url_for('main.profile', username='testuser'))
+        self.assertIn(b'Login', response.data)
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
