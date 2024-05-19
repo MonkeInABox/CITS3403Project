@@ -10,6 +10,7 @@ from hashlib import md5
 from app import db
 from itsdangerous import URLSafeTimedSerializer
 
+# User model
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -54,8 +55,7 @@ class User(UserMixin, db.Model):
         except Exception:
             return None
         
-    
-
+# Post model
 class Post(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -165,7 +165,8 @@ class Post(db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
-    
+
+# Comment model
 class Comment(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -188,6 +189,7 @@ class Comment(db.Model):
         self.author_id = author_id
         self.post_id = post_id
 
+# Like model
 class Like(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 
@@ -203,7 +205,7 @@ class Like(db.Model):
 
     original_comment = db.relationship('Comment', back_populates='likes')
 
-
+#Dislike model
 class Dislike(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
 

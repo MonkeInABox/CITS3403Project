@@ -9,13 +9,13 @@ from app.posts import bp
 from app import db
 import sqlalchemy as sa
 
-#Pass stuff to navbar
+# Pass SearchForm to navbar
 @bp.context_processor
 def heading():
     form = SearchForm()
     return dict(form=form)
     
-
+# Post a new post
 @bp.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
@@ -31,7 +31,7 @@ def newpost():
         return render_template('new_post.html', form=form)
 
 
-# Categories (can split if need be later on)
+# Render category pages
 @bp.route('/categories/', defaults={'category': None}, methods=['GET'])
 @bp.route('/categories/<category>/', methods=['GET', 'POST'])
 def categories(category):
@@ -45,6 +45,7 @@ def categories(category):
 
     return render_template('index.html', title=category, **result)
 
+# Edit a post
 @bp.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
 @login_required
 def edit_post(post_id):
@@ -65,7 +66,8 @@ def edit_post(post_id):
         return redirect(url_for('main.index'))
 
     return render_template('edit_post.html', form=form)
-    
+
+# Delete a post
 @bp.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(post_id):
@@ -78,6 +80,7 @@ def delete_post(post_id):
         return redirect(url_for('main.index'))
     return render_template('delete_post.html', form=form)
 
+# Check for new comments
 @bp.route('/check_updates')
 def check_updates():
     

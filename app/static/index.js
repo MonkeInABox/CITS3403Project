@@ -1,4 +1,6 @@
+// Allows for posts and comments to be liked without causing a page refresh.
 function like(postId, medium) {
+    // Variables are set based on whether the like/dislike is for a post or comment.
     if (medium == "post") {
         var likeCount = document.getElementById(`likes-count-post-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
@@ -17,16 +19,20 @@ function like(postId, medium) {
         var not_disliked_class_name = "far fa-thumbs-down fa-lg"
     }
 
+    // Data that is sent by the like route is 'fecthed'.
     fetch(`/like/${postId}/like/${medium}`, { method: "POST" })
         .then((res) => res.json())
         .then((data) => {
+            // Update the like counter
             likeCount.innerHTML = data["likes"];
             if (data["liked"] === true) {
+                // Update appearance of like button
                 likeButton.className = liked_class_name
             } else (
                 likeButton.className = not_liked_class_name
             )
             if (data["disliked"] === true) {
+                // Update appearance of dislike button
                 dislikeButton.className = disliked_class_name
             } else (
                 dislikeButton.className = not_disliked_class_name
@@ -34,7 +40,9 @@ function like(postId, medium) {
         })
 }
 
+// Allows for posts and comments to be disliked without causing a page refresh.
 function dislike(postId, medium) {
+    // Variables are set based on whether the like/dislike is for a post or comment.
     if (medium == "post") {
         var likeCount = document.getElementById(`likes-count-post-${postId}`);
         var dislikeButton = document.getElementById(`dislike-button-post-${postId}`);
@@ -53,15 +61,19 @@ function dislike(postId, medium) {
         var not_disliked_class_name = "far fa-thumbs-down fa-lg"
     }
 
+    // Data that is sent by the like route is 'fecthed'.
     fetch(`/like/${postId}/dislike/${medium}`, { method: "POST" })
         .then((res) => res.json())
         .then((data) => {
+            // Update the like counter
             likeCount.innerHTML = data["likes"];
+            //Update appearance of dislike button
             if (data["disliked"] === true) {
                 dislikeButton.className = disliked_class_name
             } else (
                 dislikeButton.className = not_disliked_class_name
             )
+            // Update appearance of like button
             if (data["liked"] === true) {
                 likeButton.className = liked_class_name
             } else (
