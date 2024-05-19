@@ -81,13 +81,8 @@ class SeleniumTests(unittest.TestCase):
 
         self.server_thread = multiprocessing.Process(target=self.app.run)
         self.server_thread.start()
-        try:
-            service = ChromeService(executable_path='./chromedriver.exe')
-            self.driver = webdriver.Chrome(service=service)
-            self.driver.get('http://localhost:5000') 
-        except Exception as e:
-            self.tearDown()
-            raise RuntimeError("WebDriver initialization failed") from e
+        service = ChromeService(executable_path='./chromedriver.exe')
+        self.driver = webdriver.Chrome(service)
         self.driver.get(localHost)
 
     def test_dropdown_filter(self):
