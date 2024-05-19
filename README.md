@@ -46,7 +46,7 @@ In: `/CITS3403` folder, ensure the website is running
 Enter: `python -m unittest test.py`
 
 *Issues* may arise if the `chromedriver.exe` file is not the same version as your chromium
-tester.
+tester executable that is where it is expected to be.
 
 
 
