@@ -20,6 +20,6 @@ class Config:
         "Films": "film",
         "Music": "musc",
         "Books": "book",
-        "TV_Shows": "tvsh",
-        "Video_Games": "vdga"
+        "TV Shows": "tvsh",
+        "Video Games": "vdga"
     }

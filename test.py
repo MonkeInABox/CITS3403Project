@@ -92,21 +92,61 @@ class UserModelCase(unittest.TestCase):
     def test_comment_filter(self):
         with self.app_context:
             post1 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
-            post2 = Post(body="What's a good song?", category='music', user_id=self.current_user.id)  # Corrected category typo
+            post2 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
             post3 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            post4 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post5 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
+            post6 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            post7 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post8 = Post(body="What's a good song?", category='musc', user_id=self.current_user.id)
+            post9 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
             db.session.add(post1)
+            db.session.commit()
             db.session.add(post2)
-            db.session.add(post3)
+            db.session.commit()
+            db.session.add(post3) # I need to commit after every one as the timestamps are needed
+            db.session.commit()
+            db.session.add(post4)
+            db.session.commit()
+            db.session.add(post5)
+            db.session.commit()
+            db.session.add(post6)
+            db.session.commit()
+            db.session.add(post7)
+            db.session.commit()
+            db.session.add(post8)
+            db.session.commit()
+            db.session.add(post9)
             db.session.commit()
 
             comment1 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post1.id)
-            comment2 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post1.id)
+            comment2 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post3.id)
+            comment3 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post5.id)
+            comment4 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post7.id)
+            comment5 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post8.id)
             db.session.add(comment1)
             db.session.add(comment2)
+            db.session.add(comment3)
+            db.session.add(comment4) # Not needed timestamps
+            db.session.add(comment5)
             db.session.commit()
             
+        # FOR ALL CHECKS I ONLY NEED TO CHECK ONE CATEGORY
+        # THIS IS BECAUSE EVERYTHING REFERENCES THE CONFIGURATION FILE WITH CATEGORIES
+        # Get every post
+        result = Post.get_posts_with_comment_status(1, "null", None)
+        self.assertEqual(result, [-9, 8, 7, -6, 5, -4, 3, -2, 1])
 
-        result = Post.get_posts_with_comment_status(5, "null", 'film')
+        # Get every film post
+        result = Post.get_posts_with_comment_status(1, "null", 'film')
+        print(result)
+        self.assertEqual(result, [-9, 7, -6, -4, 3, 1])
+
+        # Check latest
+        result = Post.get_posts_with_comment_status(1, "ldst", 'film')
+        self.assertEqual(result, [3, -4, -6, 7, -9])
+
+        result = Post.get_posts_with_comment_status(1, "nwst", 'film')
         self.assertEqual(result, [-3, 1])
 
 
