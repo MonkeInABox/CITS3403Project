@@ -81,9 +81,8 @@ class SeleniumTests(unittest.TestCase):
 
         self.server_thread = multiprocessing.Process(target=self.app.run)
         self.server_thread.start()
-        service = webdriver.chrome.service.Service('./chromedriver.exe')
-        self.driver = webdriver.Chrome(service=service)
-        self.driver.maximize_window()
+        
+        self.driver = webdriver.Chrome()
         self.driver.get(localHost)
 
     def test_dropdown_filter(self):
