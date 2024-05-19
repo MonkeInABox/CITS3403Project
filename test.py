@@ -173,12 +173,10 @@ class UserModelCase(unittest.TestCase):
 
         # Check likes
         result = Post.get_posts_with_comment_status(1, "mslk", None)
-        print(result)
         self.assertEqual(result, [1, -2])
 
         # Check dislikes
         result = Post.get_posts_with_comment_status(1, "msdk", None)
-        print(result)
         self.assertEqual(result, [1, -2])
 
     def test_likes(self):
@@ -227,7 +225,6 @@ class UserModelCase(unittest.TestCase):
         self.app.post('/newpost', body = "any books with Harrison Ford?", user_id = post_u.id, category = "book")
         self.app.post('/newpost', body = "any music with Harrison Ford?", user_id = post_u.id, category = "musc")
         self.app.post('/newpost', body = "any tv shows with Harrison Ford?", user_id = post_u.id, category = "tvsh")
-        print(self.app.get('categories/film'))
 
 localHost = "http://localhost:5000"
 

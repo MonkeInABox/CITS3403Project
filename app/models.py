@@ -98,7 +98,8 @@ class Post(db.Model):
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
-            if search_term != "null":
+            if search_term != "null" and search_term is not None:
+                print(search_term)
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
             # Apply ordering by timestamp descending
@@ -116,7 +117,7 @@ class Post(db.Model):
             # Apply filters if provided
             if category is not None:
                 query = query.filter(Post.category == category)
-            if search_term != "null":
+            if search_term != "null" and search_term is not None:
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
             # Apply ordering by timestamp in descending order
@@ -133,7 +134,7 @@ class Post(db.Model):
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
-            if search_term != "null":
+            if search_term != "null" and search_term is not None:
                 query = query.filter(Post.body.like('%' + search_term + '%'))
 
             query = query.offset(start_post_id).limit(posts_per_page)
@@ -145,7 +146,7 @@ class Post(db.Model):
             )
             if category is not None and query is not None:
                 query = query.filter(Post.category == category)
-            if search_term != "null":
+            if search_term != "null" and search_term is not None:
                 query = query.filter(Post.body.like('%' + search_term + '%'))
                 
             query = query.offset(start_post_id).limit(posts_per_page)
