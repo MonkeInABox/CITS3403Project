@@ -89,6 +89,27 @@ class UserModelCase(unittest.TestCase):
             self.assertEqual(comment.body, "I also love Harrison Ford!")
             self.assertEqual(comment.author_id, self.current_user.id)
 
+    def test_comment_filter(self):
+        with self.app_context:
+            post1 = Post(body="What's a good movie with Harrison Ford?", category='film', user_id=self.current_user.id)
+            post2 = Post(body="What's a good song?", category='music', user_id=self.current_user.id)  # Corrected category typo
+            post3 = Post(body="What's a good movie with Justin Bieber?", category='film', user_id=self.current_user.id)
+            db.session.add(post1)
+            db.session.add(post2)
+            db.session.add(post3)
+            db.session.commit()
+
+            comment1 = Comment(body="Harrison test 1", author_id=self.current_user.id, post_id=post1.id)
+            comment2 = Comment(body="Harrison test 2", author_id=self.current_user.id, post_id=post1.id)
+            db.session.add(comment1)
+            db.session.add(comment2)
+            db.session.commit()
+            
+
+        result = Post.get_posts_with_comment_status(5, "null", 'film')
+        self.assertEqual(result, [-3, 1])
+
+
 
     def tearDown(self):
         db.session.remove()
