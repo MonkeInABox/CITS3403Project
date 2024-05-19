@@ -5,7 +5,14 @@
         <h2> Search results for: {{ search_data }} </h2>
         <br>
     {% endif %}
-    <form action="{{ url_for('main.filter_posts') }}" method = "post">
+    {% if current_user.is_anonymous %}
+        <h2 style="padding-left: 27vw;">Welcome to recollective!</h2>
+        <h2 style="padding-left: 8vw;">Create an account or sign in to find a new fave or recommend an old one!</h2>
+    {% else %}
+        <h2 style="padding-left: 10vw;">Choose a category to find a new fave or recommend an old one!</h2>
+    {% endif %}
+    <br>
+    <form action="{{ url_for('main.filter_posts', **request.args) }}" method = "post">
         {{ filter_form.hidden_tag() }}
         <p style="padding-left:5vw"> 
             {{ filter_form.filter.label }}
@@ -23,25 +30,30 @@
     <div class="posts">
     <p class = "post">
         {% include '_post.html' %}
+    </p>
+    {% if current_user.is_authenticated %}
+    <p class="new_comment">
+        {% include 'new_comment.html' %}
+    </p>
+    {% endif %}
+    <div id="toggle-comments-field-{{post.id}}" style="display: none;">
+        {% for comment in sorted_comments %}
+        <p>
+            {% include '_comment.html' %}
         </p>
-        {% if current_user.is_authenticated %}
-            <p class = "new_comment">
-                {% include 'new_comment.html' %}
-            </p>
-        {% endif %}
-        <div id="toggle-comments-field-{{post.id}}" style="display: none;">
-            {% for comment in sorted_comments %}
-                <p>
-                    {% include '_comment.html' %}
-                </p>
-            {% endfor %}
-        </div>              
+        {% endfor %}
+    </div>
     {% endfor %}
     {% if prev_url %}
-        <a style="padding-left: 2vw;" href="{{ prev_url }}">Newer posts</a>
+    <br><br>
+    <a style="padding: 1vw; margin-left: 3vw; margin-top: 5vh; border-radius: 0.5em; background-color:#152235; color: white;"
+        href="{{ prev_url }}"><span style="font-size: small;" class="material-symbols-outlined">
+            arrow_back_ios</span>Previous Page</a>
     {% endif %}
     {% if next_url %}
-        <a style="padding-left: 2vw;" href="{{ next_url }}">Older posts</a>
-    {% endif %}
-    </div>
+    <a style="padding: 1vw; margin-left: 25vw; margin-top: 5vh; border-radius: 0.5em; background-color:#152235; color: white;"
+        href="{{ next_url }}"> Next Page <span style="font-size: small;" class="material-symbols-outlined">
+            arrow_forward_ios</span></a>
+            {% endif %}
+</div>
 {% endblock %}

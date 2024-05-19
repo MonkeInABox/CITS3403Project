@@ -1,43 +1,51 @@
+<!DOCTYPE html>
+
 <div style="display: flex; flex-direction: column; width: 100vw;">
 
     <div valign="top" style="width: 80vw; margin-left: 2vw;">
         <a href="{{ url_for('main.profile', username=post.author.username) }}">
             <img style="padding-right: 0.7em; height: 3em;" src="{{ post.author.avatar(40) }}">
         </a>
-        <span  style="display: inline-block;">
+        <span style="display: inline-block;">
             <a class="poster_name" href="{{ url_for('main.profile', username=post.author.username) }}">
                 {{ post.author.username }}
             </a>
         </span>
         <span style="display: inline-block;" class="post_body">
-            {{ post.body }}postid: {{ post.id }} postauthorid: {{ post.author.id }}
+            {{ post.body }}
         </span>
         <br>
-            {% if current_user is none or current_user.id == post.author.id %}
-            <a class="delete_comment" href="{{ url_for('posts.delete_post', post_id=post.id) }}">Delete Post</a>
-            <a class = "edit_comment" href="{{ url_for('posts.edit_post', post_id=post.id) }}">Edit Post</a>
-            {% endif %}
+        {% if current_user is none or current_user.id == post.author.id %}
+        <a class="delete_comment" href="{{ url_for('posts.delete_post', post_id=post.id) }}">Delete Post</a>
+        <a class="edit_comment" href="{{ url_for('posts.edit_post', post_id=post.id) }}">Edit Post</a>
+        {% endif %}
     </div>
     <p></p>
-    <div style = "margin-left: 10vw;">
+    <div style="margin-left: 10vw;">
         {% if current_user.id in post.likes|map(attribute = "author_id")|list %}
-            {% set class_id = "fas fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% set class_id = "fas fa-thumbs-up fa-2x" %}
+        <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% else %}
-            {% set class_id = "far fa-thumbs-up fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% set class_id = "far fa-thumbs-up fa-2x" %}
+        <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <i class = "{{class_id}}" style = "transform: scaleX(-1);"  id = "like-button-post-{{post.id}}"onclick = "like({{post.id}}, 'post')"></i>
-        <span id = "likes-count-post-{{post.id}}"> {{ post.likes|length - post.dislikes|length }} </span>
+        <i class="{{class_id}}" style="transform: scaleX(-1);" id="like-button-post-{{post.id}}"
+            onclick="like({{post.id}}, 'post')"></i>
+        <span id="likes-count-post-{{post.id}}"> {{ post.likes|length - post.dislikes|length }} </span>
         {% if current_user.id in post.dislikes|map(attribute = "author_id")|list %}
-            {% set class_id = "fas fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% set class_id = "fas fa-thumbs-down fa-2x" %}
+        <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% else %}
-            {% set class_id = "far fa-thumbs-down fa-2x" %}   <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
+        {% set class_id = "far fa-thumbs-down fa-2x" %}
+        <!-- To make like icon smaller, replace 'fa-2x' with fa-lg or remove entirely.-->
         {% endif %}
-        <i class = "{{class_id}}"  id = "dislike-button-post-{{post.id}}"onclick = "dislike({{post.id}}, 'post' )"></i>
-        <i class = "fa-regular fa-comments fa-2x toggle-comments-button"   
-        id = "toggle-comments-button-{{post.id}}" data-post-id="{{post.id}}" style="{% if post.comments %} display: inline; {% else %} display: none; {% endif %}"></i>
-        
+        <i class="{{class_id}}" id="dislike-button-post-{{post.id}}" onclick="dislike({{post.id}}, 'post' )"></i>
+        <i class="fa-regular fa-comments fa-2x toggle-comments-button" id="toggle-comments-button-{{post.id}}"
+            data-post-id="{{post.id}}"
+            style="{% if post.comments %} display: inline; {% else %} display: none; {% endif %}"></i>
+
     </div>
-    
+
     <div id="replies-{{post.id}}" style="display: none;">
         <span style="margin-left: 10vw;" class="replies_heading">Replies:</span>
     </div>

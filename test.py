@@ -17,6 +17,9 @@ import time
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    SERVER_NAME = 'localhost'  # Setting SERVER_NAME for URL building
+    APPLICATION_ROOT = '/'     # Application root
+    PREFERRED_URL_SCHEME = 'http'  # Preferred URL scheme
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
@@ -24,14 +27,27 @@ class UserModelCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        self.client = self.app.test_client()
+
+        self.user = User(username='testuser', email='test@example.com')
+        self.user.set_password('password')
+        db.session.add(self.user)
+        db.session.commit()
+        self.login()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
 
+    def login(self):
+        self.client.post(url_for('auth.login'), data={
+            'username': 'testuser',
+            'password': 'password'
+        })
+
     def test_password_hashing(self):
-        u = User(username='susan', email='susan@example.com')
+        u = User(username='testuser', email='testuser@example.com')
         u.set_password('cat')
         self.assertFalse(u.check_password('dog'))
         self.assertTrue(u.check_password('cat'))
